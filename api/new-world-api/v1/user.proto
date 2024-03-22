@@ -1,0 +1,106 @@
+syntax = "proto3";
+
+package new_world.v1;
+
+import "google/api/annotations.proto";
+
+
+option go_package = "new-world/api/new-world-api/v1;apipb";
+option java_multiple_files = true;
+option java_package = "com.world.protobuf.api.v1";
+option java_outer_classname = "UserProtoV1";
+
+service User {
+  rpc Sign (SignRequest) returns (SignResult) {
+    option (google.api.http) = {
+      post: "/api/v1/user/sign",
+      body: "*"
+    };
+  }
+  rpc Asset (AssetRequest) returns (AssetResult) {
+    option (google.api.http) = {
+      post: "/api/v1/user/asset",
+      body: "*"
+    };
+  }
+  rpc Rank (RankRequest) returns (RankResult) {
+    option (google.api.http) = {
+      post: "/api/v1/user/rank",
+      body: "*"
+    };
+  }
+  rpc ExpandParking (ExpandParkingRequest) returns (ExpandParkingResult) {
+    option (google.api.http) = {
+      post: "/api/v1/user/expand/parking",
+      body: "*"
+    };
+  }
+  rpc Eat (EatRequest) returns (EatResult) {
+    option (google.api.http) = {
+      post: "/api/v1/user/eat",
+      body: "*"
+    };
+  }
+  rpc SkillUpgrade (SkillUpgradeRequest) returns (SkillUpgradeResult) {
+    option (google.api.http) = {
+      post: "/api/v1/user/skill/upgrade",
+      body: "*"
+    };
+  }
+  rpc BuildingUpgrade (BuildingUpgradeRequest) returns (BuildingUpgradeResult) {
+    option (google.api.http) = {
+      post: "/api/v1/user/building/upgrade",
+      body: "*"
+    };
+  }
+}
+
+message SignRequest {}
+
+message SignResult {}
+
+message AssetRequest {}
+
+message AssetResult {
+  int32 level = 1;
+  int64 exp = 2;
+  int64 gold = 3;
+}
+
+enum RankType {
+  level = 0;
+}
+
+enum PropStatus {
+  prop_unused = 0;
+  prop_used = 1;
+  prop_expired = 2;
+}
+
+message RankRequest {
+  RankType rank_type = 1;
+}
+
+message RankResult {}
+
+message ExpandParkingRequest {}
+
+message ExpandParkingResult {}
+
+message EatRequest {
+  int64 prop_id = 1;
+}
+
+message EatResult {}
+
+message SkillUpgradeRequest {
+  int64 skill_id = 1;
+}
+
+message SkillUpgradeResult {}
+
+message BuildingUpgradeRequest {
+  int64 building_id = 1;
+}
+
+message BuildingUpgradeResult {}

@@ -1,0 +1,60 @@
+syntax = "proto3";
+package kratos.api;
+
+option go_package = "new-world-robot/internal/conf;conf";
+
+import "google/protobuf/duration.proto";
+
+message Bootstrap {
+  Server server = 1;
+  Data data = 2;
+  App app = 3;
+}
+
+message Server {
+  message HTTP {
+    string network = 1;
+    string addr = 2;
+    google.protobuf.Duration timeout = 3;
+  }
+  message GRPC {
+    string network = 1;
+    string addr = 2;
+    google.protobuf.Duration timeout = 3;
+  }
+  HTTP http = 1;
+  GRPC grpc = 2;
+}
+
+message Data {
+  message Database {
+    string driver = 1;
+    string source = 2;
+  }
+  message Redis {
+    string network = 1;
+    string addr = 2;
+    google.protobuf.Duration read_timeout = 3;
+    google.protobuf.Duration write_timeout = 4;
+  }
+  Database database = 1;
+  Redis redis = 2;
+}
+
+message App {
+  int32 robot_count = 1;
+  string auth_url = 2;
+  string asset_url = 3;
+  string create_fish_url = 4;
+  string fish_list_url = 5;
+  string fish_sleep_url = 6;
+  string fish_alive_url = 7;
+  string pool_rank_url = 8;
+  string expand_parking_url = 9;
+  string market_list_url = 10;
+  string market_detail_url = 11;
+  string market_sell_url = 12;
+  string market_stop_sell_url = 13;
+  string market_buy_url = 14;
+  string parking_list_url = 15;
+}

@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package shared.v1;
+
+option java_multiple_files = true;
+option java_package = "com.world.protobuf.shared.v1";
+option go_package = "new-world/api/shared/v1;sharedpb";
+
+message PoolRank {
+  int64 fish_id = 1;
+  int64 weight = 2;
+  int64 master_uid = 3;
+  string fish_name = 4;
+  int64 icon_source_id = 5;
+  string master_name = 6;
+  int64 alive_time_ms = 7;
+  int32 rank = 8;
+}
+
+enum FishStatus {
+  alive = 0;
+  sleep = 1;
+  up_sell = 2;
+  dead = 3;
+  refined = 4;
+}
+
+message FreshFish {
+  int64 id = 1;
+  string name = 2;
+  int64 icon_source_id = 3;
+  int64 weight = 4;
+  int64 max_heal = 5;
+  int64 heal = 6;
+  int64 recover_speed = 7;
+  int64 atk = 8;
+  int64 def = 9;
+  int64 earn_speed = 10;
+  int32 dodge = 11;
+  int64 money = 12;
+  FishStatus statue = 13;
+  int64 personality_id = 14;
+  int64 master_uid = 15;
+}

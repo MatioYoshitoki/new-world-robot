@@ -1,0 +1,29 @@
+syntax = "proto3";
+package new_world_robot.v1;
+
+option go_package = "new-world-robot/api/new-world-robot/v1;v1";
+import "biz.proto";
+
+message RobotMemory {
+  message Auth {
+    string face = 1;
+    string f_key = 2;
+    string access_token = 3;
+    string uid = 4;
+  }
+  message Assets {
+    int64 exp = 1;
+    int64 gold = 2;
+    int32 level = 3;
+  }
+  message Fishes {
+    message Fish {
+      int64 fish_id = 1;
+      shared.v1.FishStatus statue = 13;
+    }
+    repeated Fish fish_list = 1;
+  }
+  Auth auth = 1;
+  Assets assets = 2;
+  Fishes fishes = 3;
+}

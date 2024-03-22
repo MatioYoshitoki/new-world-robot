@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package new_world.v0;
+
+import "google/api/annotations.proto";
+
+
+option go_package = "new-world/api/new-world-api/v0;apipb";
+option java_multiple_files = true;
+option java_package = "com.world.protobuf.api.v0";
+option java_outer_classname = "AuthProtoV0";
+
+// The auth service definition.
+service Auth {
+  rpc Auth (AuthRequest) returns (AuthResult) {
+    option (google.api.http) = {
+      post: "/api/v0/auth",
+      body: "*"
+    };
+  }
+
+}
+
+enum AuthType {
+  inner_auth = 0;
+  phone_auth = 1;
+  email_auth = 2;
+}
+
+message AuthRequest {
+  string account = 1;
+  string password = 2;
+  AuthType auth_type = 4; // 0 测试，1 手机号，2 邮箱
+}
+
+message AuthResult {
+  string access_token = 1;
+}

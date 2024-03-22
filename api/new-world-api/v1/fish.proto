@@ -1,0 +1,201 @@
+syntax = "proto3";
+
+package new_world.v1;
+
+import "google/api/annotations.proto";
+import "biz.proto";
+
+option go_package = "new-world/api/new-world-api/v1;apipb";
+option java_multiple_files = true;
+option java_package = "com.world.protobuf.api.v1";
+option java_outer_classname = "FishProtoV1";
+
+// The auth service definition.
+service Fish {
+  rpc List (FishListRequest) returns (FishListResult) {
+    option (google.api.http) = {
+      post: "/api/v1/fish/list",
+      body: "*"
+    };
+  }
+
+  rpc Refining (FishRefiningRequest) returns (FishRefiningResult) {
+    option (google.api.http) = {
+      post: "/api/v1/fish/refining",
+      body: "*"
+    };
+  }
+
+  rpc Create (FishCreateRequest) returns (FishCreateResult) {
+    option (google.api.http) = {
+      post: "/api/v1/fish/create",
+      body: "*"
+    };
+  }
+
+  rpc PoolRank (FishPoolRankRequest) returns (FishPoolRankResult) {
+    option (google.api.http) = {
+      post: "/api/v1/fish/pool/rank",
+      body: "*"
+    };
+  }
+  rpc Sleep (FishSleepRequest) returns (FishSleepResult) {
+    option (google.api.http) = {
+      post: "/api/v1/fish/sleep",
+      body: "*"
+    };
+  }
+  rpc Alive (FishAliveRequest) returns (FishAliveResult) {
+    option (google.api.http) = {
+      post: "/api/v1/fish/alive",
+      body: "*"
+    };
+  }
+  rpc Pull (FishPullRequest) returns (FishPullResult) {
+    option (google.api.http) = {
+      post: "/api/v1/fish/pull",
+      body: "*"
+    };
+  }
+  rpc ParkingList (ParkingListRequest) returns (ParkingListResult) {
+    option (google.api.http) = {
+      post: "/api/v1/fish/parking/list",
+      body: "*"
+    };
+  }
+}
+
+enum FishParkingStatus {
+  fish_parking_inactive = 0;
+  fish_parking_unused = 1;
+  fish_parking_used = 2;
+}
+
+enum Parking {
+  Q = 0;
+  W = 1;
+  E = 2;
+  R = 3;
+  A = 4;
+  F = 5;
+}
+
+message FishListRequest {}
+
+message FishPullRequest {}
+
+message FishRefiningRequest {
+  int64 fish_id = 1;
+}
+
+message ParkingListRequest {}
+
+message ParkingListResult {
+  message ParkingDetail {
+    Parking parking = 1;
+    FishParkingStatus status = 2;
+  }
+  repeated ParkingDetail parking_list = 1;
+}
+
+message FishCreateRequest {}
+
+message FishCreateResult {
+  int64 id = 1;
+  string name = 2;
+  int64 icon_source_id = 3;
+  int64 weight = 4;
+  int64 max_heal = 5;
+  int64 heal = 6;
+  int64 recover_speed = 7;
+  int64 atk = 8;
+  int64 def = 9;
+  int64 earn_speed = 10;
+  int32 dodge = 11;
+  int64 money = 12;
+  shared.v1.FishStatus statue = 13;
+  int64 personality_id = 14;
+  string parking = 15;
+}
+
+message FishSleepRequest {
+  int64 fish_id = 1;
+}
+
+message FishSleepResult{}
+
+message FishAliveRequest {
+  int64 fish_id = 1;
+}
+
+message FishAliveResult {}
+
+message FishPoolRankRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+}
+
+message FishDetail {
+  int64 id = 1;
+  string name = 2;
+  int64 icon_source_id = 3;
+  int64 weight = 4;
+  int64 max_heal = 5;
+  int64 heal = 6;
+  int64 recover_speed = 7;
+  int64 atk = 8;
+  int64 def = 9;
+  int64 earn_speed = 10;
+  int32 dodge = 11;
+  int64 money = 12;
+  shared.v1.FishStatus statue = 13;
+  int64 personality_id = 14;
+  string parking = 15;
+}
+
+
+message FishPullResult {
+  message FishPull {
+    int64 id = 1;
+    int64 weight = 2;
+    int64 max_heal = 3;
+    int64 heal = 4;
+    int64 recover_speed = 5;
+    int64 atk = 6;
+    int64 def = 7;
+    int64 earn_speed = 8;
+    int32 dodge = 9;
+    int64 money = 10;
+  }
+  repeated FishPull list = 1;
+  int64 ts_ms = 2;
+}
+
+
+message FishListResult {
+  repeated FishDetail list = 1;
+}
+
+message FishRefiningResult {
+  string fish_name = 1;
+  int64 fish_icon_source_id = 2;
+  int64 prop_id = 3;
+  int32 prop_type = 4;
+  string prop_name = 5;
+  string prop_remark = 6;
+  int32 experience = 7;
+}
+
+message FishPoolRankResult {
+  message MyFishRank {
+    int64 fish_id = 1;
+    string fish_name = 2;
+    int64 fish_icon_source_id = 3;
+    int32 rank = 4;
+  }
+  repeated shared.v1.PoolRank list = 1;
+  repeated MyFishRank myFishRankList = 2;
+  int32 current_page = 3;
+  int32 page_size = 4;
+  int32 total_page = 5;
+}

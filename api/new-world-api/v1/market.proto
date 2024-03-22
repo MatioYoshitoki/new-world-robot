@@ -1,0 +1,158 @@
+syntax = "proto3";
+
+package new_world.v1;
+
+import "google/api/annotations.proto";
+
+
+option go_package = "new-world/api/new-world-api/v1;apipb";
+option java_multiple_files = true;
+option java_package = "com.world.protobuf.api.v1";
+option java_outer_classname = "MarketProtoV1";
+
+// The auth service definition.
+service Market {
+  rpc List (MarketListRequest) returns (MarketListResult) {
+    option (google.api.http) = {
+      post: "/api/v1/market/list",
+      body: "*"
+    };
+  }
+
+  rpc Detail (MarketDetailRequest) returns (MarketDetailResult) {
+    option (google.api.http) = {
+      post: "/api/v1/market/detail",
+      body: "*"
+    };
+  }
+
+  rpc Sell (MarketSellRequest) returns (MarketSellResult) {
+    option (google.api.http) = {
+      post: "/api/v1/market/sell/start",
+      body: "*"
+    };
+  }
+
+  rpc StopSell (MarketStopSellRequest) returns (MarketStopSellResult) {
+    option (google.api.http) = {
+      post: "/api/v1/market/sell/stop",
+      body: "*"
+    };
+  }
+  rpc Buy (MarketBuyRequest) returns (MarketBuyResult) {
+    option (google.api.http) = {
+      post: "/api/v1/market/buy",
+      body: "*"
+    };
+  }
+}
+
+enum ProductStatus {
+  product_up_sell = 0;
+  product_down_sell = 1;
+  product_expired = 2;
+  product_complete = 3;
+}
+
+message MarketListRequest {
+  int64 fish_id = 1;
+  int64 weight_start = 2;
+  int64 weight_end = 3;
+  int64 max_heal_start = 4;
+  int64 max_heal_end = 5;
+  int64 heal_start = 6;
+  int64 heal_end = 7;
+  int64 recover_speed_start = 8;
+  int64 recover_speed_end = 9;
+  int64 atk_start = 10;
+  int64 atk_end = 11;
+  int64 def_start = 12;
+  int64 def_end = 13;
+  int64 earn_speed_start = 14;
+  int64 earn_speed_end = 15;
+  int32 dodge_start = 16;
+  int32 dodge_end = 17;
+  repeated int32 personality_ids = 18;
+  int32 own_sell_flag = 19;
+  int64 price_start = 20;
+  int64 price_end = 21;
+  int32 page = 22;
+  int32 page_size = 23;
+}
+
+message MarketListResult {
+  message FishInfo {
+    int64 product_id = 1;
+    int64 fish_id = 2;
+    int64 weight = 3;
+    int64 master_uid = 4;
+    string fish_name = 5;
+    int64 icon_source_id = 6;
+    string master_name = 7;
+    int64 price = 8;
+    int64 sell_time_remain = 9;
+    map<string, string> extra = 10; // 显示搜索条件的数值
+  }
+  repeated FishInfo list = 1;
+  int32 current_page = 2;
+  int32 page_size = 3;
+  int32 total_page = 4;
+}
+
+message MarketDetailRequest {
+  int64 product_id = 1;
+}
+
+message MarketDetailResult{
+  int64 id = 1;
+  string name = 2;
+  int64 icon_source_id = 3;
+  int64 weight = 4;
+  int64 max_heal = 5;
+  int64 heal = 6;
+  int64 recover_speed = 7;
+  int64 atk = 8;
+  int64 def = 9;
+  int64 earn_speed = 10;
+  int32 dodge = 11;
+  int64 money = 12;
+  int64 personality_id = 13;
+}
+
+enum SellDuration {
+  half_day = 0;
+  one_day = 1;
+  three_day = 2;
+  one_week = 3;
+}
+
+message MarketSellRequest {
+  int64 fish_id = 1;
+  SellDuration sell_duration = 2;
+  int64 price = 3;
+}
+
+message MarketStopSellRequest {
+  int64 product_id = 1;
+}
+
+message MarketBuyRequest {
+  int64 product_id = 1;
+}
+
+message MarketBuyResult {
+  int64 product_id = 1;
+  int64 bill_id = 2;
+  int64 fish_id = 3;
+  int64 seller_uid = 4;
+  string fish_name = 5;
+  string seller_name = 6;
+  int64 price = 7;
+  string settle_time = 8;
+}
+
+message MarketSellResult {
+  int64 commission = 1;
+}
+
+message MarketStopSellResult {}
