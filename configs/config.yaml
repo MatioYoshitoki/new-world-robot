@@ -13,3 +13,16 @@ data:
     addr: 127.0.0.1:6379
     read_timeout: 0.2s
     write_timeout: 0.2s
+app:
+  runner_group_size: 16
+  base_url: "http://127.0.0.1:8002"
+  auth_url: "/api/v0/auth"
+  asset_url: "/api/v1/user/asset"
+  create_fish_url: "/api/v1/fish/create"
+  expand_parking_url: "/api/v1/user/expand/parking"
+  parking_list_url: "/api/v1/fish/parking/list"
+  fish_list_url: "/api/v1/fish/list"
+  fish_sleep_url: "/api/v1/fish/sleep"
+  fish_alive_url: "/api/v1/fish/alive"
+  fish_refining_url: "/api/v1/fish/refining"
+  pool_rank_url: "/api/v1/fish/pool/rank"

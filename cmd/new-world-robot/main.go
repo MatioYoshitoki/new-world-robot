@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"new-world-robot/internal/server"
 	"os"
 
 	"new-world-robot/internal/conf"
@@ -30,14 +31,17 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger log.Logger) *kratos.App {
+func newApp(logger log.Logger, ms *server.ManagerServer, ts *server.TimerServer) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(Name),
 		kratos.Version(Version),
 		kratos.Metadata(map[string]string{}),
 		kratos.Logger(logger),
-		kratos.Server(),
+		kratos.Server(
+			ms,
+			ts,
+		),
 	)
 }
 
@@ -68,7 +72,7 @@ func main() {
 		panic(err)
 	}
 
-	app, cleanup, err := wireApp(bc.Server, bc.Data, logger)
+	app, cleanup, err := wireApp(bc.Server, bc.Data, &bc, logger)
 	if err != nil {
 		panic(err)
 	}

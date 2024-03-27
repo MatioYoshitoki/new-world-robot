@@ -9,6 +9,7 @@ message Bootstrap {
   Server server = 1;
   Data data = 2;
   App app = 3;
+  Robots robots = 4;
 }
 
 message Server {
@@ -42,19 +43,35 @@ message Data {
 }
 
 message App {
-  int32 robot_count = 1;
+
+  string base_url = 1;
   string auth_url = 2;
   string asset_url = 3;
   string create_fish_url = 4;
-  string fish_list_url = 5;
-  string fish_sleep_url = 6;
-  string fish_alive_url = 7;
-  string pool_rank_url = 8;
-  string expand_parking_url = 9;
-  string market_list_url = 10;
-  string market_detail_url = 11;
-  string market_sell_url = 12;
-  string market_stop_sell_url = 13;
-  string market_buy_url = 14;
-  string parking_list_url = 15;
+  string expand_parking_url = 5;
+  string parking_list_url = 6;
+
+  string fish_list_url = 11;
+  string fish_sleep_url = 12;
+  string fish_alive_url = 13;
+  string fish_refining_url = 14;
+  string pool_rank_url = 15;
+
+  string market_list_url = 21;
+  string market_detail_url = 22;
+  string market_sell_url = 23;
+  string market_stop_sell_url = 24;
+  string market_buy_url = 25;
+
+  int32 runner_group_size = 101;
+  int32 robot_count = 102;
+}
+
+message Robots {
+  message Robot {
+    int32 robot_count = 1;
+    int32 robot_start_uid = 2;
+    string f_key = 3;
+  }
+  Robot auth = 1;
 }

@@ -10,7 +10,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	v1 "new-world/api/shared/v1"
+	v1 "new-world-robot/api/shared/v1"
 	reflect "reflect"
 	sync "sync"
 )

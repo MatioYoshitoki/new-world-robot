@@ -40,11 +40,9 @@ func (m *ManagerServer) run(ctx context.Context) {
 		select {
 		case <-m.ticker.C:
 			size := m.ms.Size()
-			targetCount := int(m.bs.App.RobotCount)
+			targetCount := int(m.bs.Robots.Auth.RobotCount)
 			if targetCount > size {
 				m.ms.CreateRobot(ctx, targetCount-size)
-			} else if targetCount < size {
-				m.ms.RemoveRobot(ctx, size-targetCount)
 			}
 		}
 	}

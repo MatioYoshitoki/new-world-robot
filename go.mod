@@ -1,9 +1,10 @@
 module new-world-robot
 
-go 1.19
+go 1.21
 
 require (
 	github.com/go-kratos/kratos/v2 v2.7.2
+	github.com/google/uuid v1.6.0
 	github.com/google/wire v0.5.0
 	go.uber.org/automaxprocs v1.5.1
 	google.golang.org/genproto/googleapis/api v0.0.0-20230629202037-9506855d4529
@@ -18,7 +19,6 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-playground/form/v4 v4.2.1 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/imdario/mergo v0.3.16 // indirect
 	github.com/kr/text v0.2.0 // indirect

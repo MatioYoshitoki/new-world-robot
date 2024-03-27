@@ -6,9 +6,7 @@
 package main
 
 import (
-	"new-world-robot/internal/biz"
 	"new-world-robot/internal/conf"
-	"new-world-robot/internal/data"
 	"new-world-robot/internal/server"
 	"new-world-robot/internal/service"
 
@@ -18,6 +16,6 @@ import (
 )
 
 // wireApp init kratos application.
-func wireApp(*conf.Server, *conf.Data, log.Logger) (*kratos.App, func(), error) {
-	panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, newApp))
+func wireApp(*conf.Server, *conf.Data, *conf.Bootstrap, log.Logger) (*kratos.App, func(), error) {
+	panic(wire.Build(server.ProviderSet, service.ProviderSet, newApp))
 }
