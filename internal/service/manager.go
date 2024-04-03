@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"github.com/google/uuid"
 	"math/rand"
 	"net/http"
@@ -23,7 +22,9 @@ func NewManagerService(bs *conf.Bootstrap) *ManagerService {
 		bs:     bs,
 		robots: map[int64]*biz.Robot{},
 		rd:     rand.New(rand.NewSource(time.Now().UnixNano())),
-		hc:     &http.Client{},
+		hc: &http.Client{
+			Timeout: 10 * time.Second,
+		},
 	}
 }
 
@@ -36,7 +37,7 @@ func (m *ManagerService) AllRobotsByGroup(groupSize int) [][]*biz.Robot {
 	return rst
 }
 
-func (m *ManagerService) CreateRobot(ctx context.Context, count int) {
+func (m *ManagerService) CreateRobot(count int) {
 	if count <= 0 {
 		return
 	}
@@ -49,7 +50,7 @@ func (m *ManagerService) CreateRobot(ctx context.Context, count int) {
 	}
 }
 
-func (m *ManagerService) RemoveRobot(ctx context.Context, count int) {
+func (m *ManagerService) RemoveRobot(count int) {
 	if count <= 0 {
 		return
 	}
@@ -74,4 +75,31 @@ func (m *ManagerService) RemoveRobot(ctx context.Context, count int) {
 
 func (m *ManagerService) Size() int {
 	return len(m.robots)
+}
+
+func (m *ManagerService) Statistics() (map[string]int64, map[string]int64) {
+	cms := map[string]int64{}
+	tms := map[string]int64{}
+	for _, robot := range m.robots {
+		cm, tm := robot.Statistics()
+		for _, url := range cm.Keys() {
+			if v, ok := cms[url]; ok {
+				get, _ := cm.Get(url)
+				cms[url] = v + get
+			} else {
+				get, _ := cm.Get(url)
+				cms[url] = get
+			}
+		}
+		for _, url := range tm.Keys() {
+			if v, ok := tms[url]; ok {
+				get, _ := tm.Get(url)
+				tms[url] = v + get
+			} else {
+				get, _ := tm.Get(url)
+				tms[url] = get
+			}
+		}
+	}
+	return cms, tms
 }

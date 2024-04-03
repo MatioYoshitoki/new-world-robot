@@ -5,6 +5,6 @@ import (
 	"time"
 )
 
-func RandomDuration(start, end int, rd *rand.Rand) time.Duration {
-	return time.Duration(start+rd.Intn(end-start)) * time.Second
+func RandomDuration(start, end int, duration time.Duration, rd *rand.Rand) time.Duration {
+	return time.Duration(start+rd.Intn(end-start)) * duration
 }

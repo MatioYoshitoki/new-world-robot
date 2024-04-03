@@ -63,7 +63,7 @@ func TestRobot_auth(t *testing.T) {
 				memory: tt.fields.memory,
 				bs:     tt.fields.bs,
 			}
-			got, err := r.auth(tt.args.ctx)
+			got, err := r.auth()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("auth() error = %v, wantErr %v", err, tt.wantErr)
 				return

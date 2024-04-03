@@ -1,7 +1,6 @@
 package net_utils
 
 import (
-	"context"
 	"encoding/json"
 	"io"
 	"net/http"
@@ -13,7 +12,7 @@ type CommonResult[T any] struct {
 	Data    T
 }
 
-func RequestToStruct[T any](ctx context.Context, hc *http.Client, request *http.Request) (*CommonResult[T], error) {
+func RequestToStruct[T any](hc *http.Client, request *http.Request) (*CommonResult[T], error) {
 	response, err := hc.Do(request)
 	if err != nil {
 		return nil, err

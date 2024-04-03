@@ -25,7 +25,7 @@ func NewManagerServer(ms *service.ManagerService, bs *conf.Bootstrap) *ManagerSe
 func (m *ManagerServer) Start(ctx context.Context) error {
 	m.started = true
 	m.ticker = time.NewTicker(1 * time.Second)
-	go m.run(ctx)
+	go m.run()
 	return nil
 }
 
@@ -35,14 +35,14 @@ func (m *ManagerServer) Stop(ctx context.Context) error {
 	return nil
 }
 
-func (m *ManagerServer) run(ctx context.Context) {
+func (m *ManagerServer) run() {
 	for m.started {
 		select {
 		case <-m.ticker.C:
 			size := m.ms.Size()
 			targetCount := int(m.bs.Robots.Auth.RobotCount)
 			if targetCount > size {
-				m.ms.CreateRobot(ctx, targetCount-size)
+				m.ms.CreateRobot(targetCount - size)
 			}
 		}
 	}
