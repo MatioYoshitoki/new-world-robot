@@ -62,6 +62,7 @@ message App {
   string market_sell_url = 23;
   string market_stop_sell_url = 24;
   string market_buy_url = 25;
+  string market_mine_url = 26;
 
   int32 runner_group_size = 101;
   int32 robot_count = 102;

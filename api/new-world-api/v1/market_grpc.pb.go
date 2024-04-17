@@ -27,6 +27,7 @@ type MarketClient interface {
 	Sell(ctx context.Context, in *MarketSellRequest, opts ...grpc.CallOption) (*MarketSellResult, error)
 	StopSell(ctx context.Context, in *MarketStopSellRequest, opts ...grpc.CallOption) (*MarketStopSellResult, error)
 	Buy(ctx context.Context, in *MarketBuyRequest, opts ...grpc.CallOption) (*MarketBuyResult, error)
+	MineList(ctx context.Context, in *MarketMineListRequest, opts ...grpc.CallOption) (*MarketMineListResult, error)
 }
 
 type marketClient struct {
@@ -82,6 +83,15 @@ func (c *marketClient) Buy(ctx context.Context, in *MarketBuyRequest, opts ...gr
 	return out, nil
 }
 
+func (c *marketClient) MineList(ctx context.Context, in *MarketMineListRequest, opts ...grpc.CallOption) (*MarketMineListResult, error) {
+	out := new(MarketMineListResult)
+	err := c.cc.Invoke(ctx, "/new_world.v1.Market/MineList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MarketServer is the server API for Market service.
 // All implementations must embed UnimplementedMarketServer
 // for forward compatibility
@@ -91,6 +101,7 @@ type MarketServer interface {
 	Sell(context.Context, *MarketSellRequest) (*MarketSellResult, error)
 	StopSell(context.Context, *MarketStopSellRequest) (*MarketStopSellResult, error)
 	Buy(context.Context, *MarketBuyRequest) (*MarketBuyResult, error)
+	MineList(context.Context, *MarketMineListRequest) (*MarketMineListResult, error)
 	mustEmbedUnimplementedMarketServer()
 }
 
@@ -112,6 +123,9 @@ func (UnimplementedMarketServer) StopSell(context.Context, *MarketStopSellReques
 }
 func (UnimplementedMarketServer) Buy(context.Context, *MarketBuyRequest) (*MarketBuyResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Buy not implemented")
+}
+func (UnimplementedMarketServer) MineList(context.Context, *MarketMineListRequest) (*MarketMineListResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method MineList not implemented")
 }
 func (UnimplementedMarketServer) mustEmbedUnimplementedMarketServer() {}
 
@@ -216,6 +230,24 @@ func _Market_Buy_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Market_MineList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MarketMineListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MarketServer).MineList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/new_world.v1.Market/MineList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MarketServer).MineList(ctx, req.(*MarketMineListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Market_ServiceDesc is the grpc.ServiceDesc for Market service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -242,6 +274,10 @@ var Market_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Buy",
 			Handler:    _Market_Buy_Handler,
+		},
+		{
+			MethodName: "MineList",
+			Handler:    _Market_MineList_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

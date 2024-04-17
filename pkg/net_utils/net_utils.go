@@ -25,5 +25,8 @@ func RequestToStruct[T any](hc *http.Client, request *http.Request) (*CommonResu
 	if err := json.Unmarshal(respBody, &rst); err != nil {
 		return nil, err
 	}
+	if rst.Code == 503 {
+		panic(err)
+	}
 	return &rst, nil
 }

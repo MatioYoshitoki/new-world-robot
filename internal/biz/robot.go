@@ -2,6 +2,7 @@ package biz
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	errors2 "github.com/go-kratos/kratos/v2/errors"
@@ -71,9 +72,9 @@ func NewRobot(id int64, hc *http.Client, bs *conf.Bootstrap, rd *rand.Rand, face
 		},
 	}
 	robot.defaultRateMap = []func() error{robot.tryRandomOperateFish}
-	robot.canCreateFishRateMap = []func() error{robot.tryRandomOperateFish, robot.tryCreateFish}
+	robot.canCreateFishRateMap = []func() error{robot.tryRandomOperateFish, robot.tryCreateOrBuyFish}
 	robot.canExpandParkingRateMap = []func() error{robot.tryRandomOperateFish, robot.tryExpandParking}
-	robot.bothCreateFishExpandParkingRateMap = []func() error{robot.tryRandomOperateFish, robot.tryExpandParking, robot.tryCreateFish}
+	robot.bothCreateFishExpandParkingRateMap = []func() error{robot.tryRandomOperateFish, robot.tryExpandParking, robot.tryCreateOrBuyFish}
 	robot.noFishNoParkingRateMap = []func() error{robot.tryExpandParking}
 	return robot
 }
@@ -88,6 +89,9 @@ func (r *Robot) Work(waterId int64) {
 		log.Error("auth failed ", err)
 		return
 	}
+	if r.memory.Auth.AccessToken == "" {
+		return
+	}
 	if err := r.tryRefreshAssets(); err != nil {
 		log.Error("refresh assets failed ", err)
 		return
@@ -100,9 +104,19 @@ func (r *Robot) Work(waterId int64) {
 		log.Error("refresh parking list failed ", err)
 		return
 	}
+	if err := r.justTryPoolRank(); err != nil {
+		log.Warn("just pool rank failed! continue~ ", err)
+	}
+	if err := r.tryLoadMarketList(); err != nil {
+		log.Error("refresh market list failed ", err)
+		return
+	}
+	if err := r.tryMarketMineList(); err != nil {
+		log.Error("refresh market mine list failed ", err)
+		return
+	}
 	fishCount := len(r.memory.Fishes.FishList)
 	usefulCount, inactiveCount := r.parkingCountByStatus()
-	//log.Context(ctx).Debugf("uid=%s, fish_count=%d, useful_count=%d, inactive_count=%d", r.memory.Auth.Uid, fishCount, usefulCount, inactiveCount)
 	op := r.tryRandomOperateFish
 	if usefulCount > 0 && inactiveCount > 0 && fishCount > 0 {
 		oIdx := r.rd.Intn(len(r.bothCreateFishExpandParkingRateMap))
@@ -114,7 +128,7 @@ func (r *Robot) Work(waterId int64) {
 		oIdx := r.rd.Intn(len(r.canExpandParkingRateMap))
 		op = r.canExpandParkingRateMap[oIdx]
 	} else if fishCount == 0 && usefulCount > 0 {
-		op = r.tryCreateFish
+		op = r.tryCreateOrBuyFish
 	} else if fishCount == 0 && inactiveCount > 0 {
 		oIdx := r.rd.Intn(len(r.noFishNoParkingRateMap))
 		op = r.noFishNoParkingRateMap[oIdx]
@@ -155,6 +169,14 @@ func (r *Robot) tryRefreshFishList() error {
 		}
 	}
 	r.memory.Fishes.FishList = fs
+	r.randomSleep()
+	return nil
+}
+
+func (r *Robot) justTryPoolRank() error {
+	if _, err := r.poolRank(1, 20); err != nil {
+		return err
+	}
 	r.randomSleep()
 	return nil
 }
@@ -209,28 +231,54 @@ func (r *Robot) tryRandomOperateFish() error {
 	if fish.Statue == sharedpb.FishStatus_alive {
 		_, err = r.fishSleep(fish.FishId)
 	} else if fish.Statue == sharedpb.FishStatus_sleep {
-		_, err = r.fishAlive(fish.FishId)
+		if fIdx%2 == 0 {
+			_, err = r.fishAlive(fish.FishId)
+		} else {
+			_, err = r.marketSell(fish.FishId, 800+rand.Int63n(800))
+		}
 	} else if fish.Statue == sharedpb.FishStatus_dead {
 		_, err = r.fishRefining(fish.FishId)
+	} else if fish.Statue == sharedpb.FishStatus_up_sell {
+		if pid, ok := r.memory.MineFishProductRelation[fish.FishId]; ok {
+			_, err = r.marketStopSell(pid)
+		} else {
+			log.Warnf("who's fish? %d", fish.FishId)
+			_ = r.tryRandomOperateFish()
+		}
 	}
 	if err != nil {
 		if errors.Is(err, biz_errors.AuthError) {
 			r.forgetMe()
 		}
-		log.Errorf("fish: %+v", fish)
+		log.Errorf("fishId: %d, fishStatus: %d", fish.FishId, fish.Statue)
 		return err
 	}
 	r.randomSleep()
 	return nil
 }
 
-func (r *Robot) tryCreateFish() error {
-	if _, err := r.createFish(); err != nil {
-		if errors.Is(err, biz_errors.AuthError) {
-			r.forgetMe()
-		}
-		return err
+func (r *Robot) tryCreateOrBuyFish() error {
+	idx := 0
+	if len(r.memory.MarketMap) > 1 {
+		idx = r.rd.Intn(len(r.memory.MarketMap))
 	}
+	if idx%2 == 0 {
+		if _, err := r.createFish(); err != nil {
+			if errors.Is(err, biz_errors.AuthError) {
+				r.forgetMe()
+			}
+			return err
+		}
+	} else {
+		p := r.memory.MarketMap[idx]
+		if _, err := r.marketBuy(p.ProductId); err != nil {
+			if errors.Is(err, biz_errors.AuthError) {
+				r.forgetMe()
+			}
+			return err
+		}
+	}
+
 	r.randomSleep()
 	return nil
 }
@@ -241,6 +289,41 @@ func (r *Robot) tryExpandParking() error {
 			r.forgetMe()
 		}
 		return err
+	}
+	r.randomSleep()
+	return nil
+}
+
+func (r *Robot) tryLoadMarketList() error {
+	if rst, err := r.marketList(1+r.rd.Int31n(5), 20); err != nil {
+		if errors.Is(err, biz_errors.AuthError) {
+			r.forgetMe()
+		}
+		return err
+	} else {
+		r.memory.MarketMap = make([]*v1.RobotMemory_Market, len(rst.GetList()))
+		for i, market := range rst.GetList() {
+			r.memory.MarketMap[i] = &v1.RobotMemory_Market{
+				ProductId: market.ProductId,
+				Price:     market.Price,
+			}
+		}
+	}
+	r.randomSleep()
+	return nil
+}
+
+func (r *Robot) tryMarketMineList() error {
+	if rst, err := r.marketMineList(); err != nil {
+		if errors.Is(err, biz_errors.AuthError) {
+			r.forgetMe()
+		}
+		return err
+	} else {
+		r.memory.MineFishProductRelation = make(map[int64]int64)
+		for _, market := range rst.GetList() {
+			r.memory.MineFishProductRelation[market.FishId] = market.ProductId
+		}
 	}
 	r.randomSleep()
 	return nil
@@ -341,6 +424,9 @@ func (r *Robot) fishSleep(fishId int64) (*apipb.FishSleepResult, error) {
 	}
 	rst, err := net_utils.RequestToStruct[apipb.FishSleepResult](r.hc, request)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			log.Errorf("sleep fish: %d, total cost: %d", fishId, time.Now().UnixMilli()-start)
+		}
 		return nil, err
 	}
 	if rst.Code == 401 {
@@ -363,6 +449,9 @@ func (r *Robot) fishAlive(fishId int64) (*apipb.FishAliveResult, error) {
 	}
 	rst, err := net_utils.RequestToStruct[apipb.FishAliveResult](r.hc, request)
 	if err != nil {
+		if errors.Is(err, context.DeadlineExceeded) {
+			log.Errorf("alive fish: %d, total cost: %d", fishId, time.Now().UnixMilli()-start)
+		}
 		return nil, err
 	}
 	if rst.Code == 401 {
@@ -462,6 +551,26 @@ func (r *Robot) marketList(page, pageSize int32) (*apipb.MarketListResult, error
 		return nil, err
 	}
 	rst, err := net_utils.RequestToStruct[apipb.MarketListResult](r.hc, request)
+	if err != nil {
+		return nil, err
+	}
+	if rst.Code == 401 {
+		return nil, biz_errors.AuthError
+	} else if rst.Code != 0 {
+		return nil, errors2.New(int(rst.Code), rst.Message, rst.Message)
+	}
+	return &rst.Data, nil
+}
+
+func (r *Robot) marketMineList() (*apipb.MarketMineListResult, error) {
+	start := time.Now().UnixMilli()
+	defer r.countDown(start, r.bs.App.MarketMineUrl)
+	param := consts.EmptyRequestParam
+	request, err := r.basePostRequest(r.bs.App.MarketMineUrl, bytes.NewBuffer(param))
+	if err != nil {
+		return nil, err
+	}
+	rst, err := net_utils.RequestToStruct[apipb.MarketMineListResult](r.hc, request)
 	if err != nil {
 		return nil, err
 	}

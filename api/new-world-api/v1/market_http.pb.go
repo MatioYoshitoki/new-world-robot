@@ -22,6 +22,7 @@ const _ = http.SupportPackageIsVersion1
 const OperationMarketBuy = "/new_world.v1.Market/Buy"
 const OperationMarketDetail = "/new_world.v1.Market/Detail"
 const OperationMarketList = "/new_world.v1.Market/List"
+const OperationMarketMineList = "/new_world.v1.Market/MineList"
 const OperationMarketSell = "/new_world.v1.Market/Sell"
 const OperationMarketStopSell = "/new_world.v1.Market/StopSell"
 
@@ -29,6 +30,7 @@ type MarketHTTPServer interface {
 	Buy(context.Context, *MarketBuyRequest) (*MarketBuyResult, error)
 	Detail(context.Context, *MarketDetailRequest) (*MarketDetailResult, error)
 	List(context.Context, *MarketListRequest) (*MarketListResult, error)
+	MineList(context.Context, *MarketMineListRequest) (*MarketMineListResult, error)
 	Sell(context.Context, *MarketSellRequest) (*MarketSellResult, error)
 	StopSell(context.Context, *MarketStopSellRequest) (*MarketStopSellResult, error)
 }
@@ -40,6 +42,7 @@ func RegisterMarketHTTPServer(s *http.Server, srv MarketHTTPServer) {
 	r.POST("/api/v1/market/sell/start", _Market_Sell0_HTTP_Handler(srv))
 	r.POST("/api/v1/market/sell/stop", _Market_StopSell0_HTTP_Handler(srv))
 	r.POST("/api/v1/market/buy", _Market_Buy0_HTTP_Handler(srv))
+	r.POST("/api/v1/market/mine", _Market_MineList0_HTTP_Handler(srv))
 }
 
 func _Market_List0_HTTP_Handler(srv MarketHTTPServer) func(ctx http.Context) error {
@@ -137,10 +140,30 @@ func _Market_Buy0_HTTP_Handler(srv MarketHTTPServer) func(ctx http.Context) erro
 	}
 }
 
+func _Market_MineList0_HTTP_Handler(srv MarketHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in MarketMineListRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationMarketMineList)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.MineList(ctx, req.(*MarketMineListRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*MarketMineListResult)
+		return ctx.Result(200, reply)
+	}
+}
+
 type MarketHTTPClient interface {
 	Buy(ctx context.Context, req *MarketBuyRequest, opts ...http.CallOption) (rsp *MarketBuyResult, err error)
 	Detail(ctx context.Context, req *MarketDetailRequest, opts ...http.CallOption) (rsp *MarketDetailResult, err error)
 	List(ctx context.Context, req *MarketListRequest, opts ...http.CallOption) (rsp *MarketListResult, err error)
+	MineList(ctx context.Context, req *MarketMineListRequest, opts ...http.CallOption) (rsp *MarketMineListResult, err error)
 	Sell(ctx context.Context, req *MarketSellRequest, opts ...http.CallOption) (rsp *MarketSellResult, err error)
 	StopSell(ctx context.Context, req *MarketStopSellRequest, opts ...http.CallOption) (rsp *MarketStopSellResult, err error)
 }
@@ -184,6 +207,19 @@ func (c *MarketHTTPClientImpl) List(ctx context.Context, in *MarketListRequest, 
 	pattern := "/api/v1/market/list"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationMarketList))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *MarketHTTPClientImpl) MineList(ctx context.Context, in *MarketMineListRequest, opts ...http.CallOption) (*MarketMineListResult, error) {
+	var out MarketMineListResult
+	pattern := "/api/v1/market/mine"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationMarketMineList))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

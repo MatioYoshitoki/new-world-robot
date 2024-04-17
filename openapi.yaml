@@ -3,8 +3,443 @@
 
 openapi: 3.0.3
 info:
-    title: ""
+    title: Market API
+    description: The auth service definition.
     version: 0.0.1
-paths: {}
+paths:
+    /api/v1/market/buy:
+        post:
+            tags:
+                - Market
+            operationId: Market_Buy
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/MarketBuyRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/MarketBuyResult'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/market/detail:
+        post:
+            tags:
+                - Market
+            operationId: Market_Detail
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/MarketDetailRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/MarketDetailResult'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/market/list:
+        post:
+            tags:
+                - Market
+            operationId: Market_List
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/MarketListRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/MarketListResult'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/market/mine:
+        post:
+            tags:
+                - Market
+            operationId: Market_MineList
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/MarketMineListRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/MarketMineListResult'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/market/sell/start:
+        post:
+            tags:
+                - Market
+            operationId: Market_Sell
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/MarketSellRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/MarketSellResult'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/market/sell/stop:
+        post:
+            tags:
+                - Market
+            operationId: Market_StopSell
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/MarketStopSellRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/MarketStopSellResult'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
 components:
-    schemas: {}
+    schemas:
+        GoogleProtobufAny:
+            type: object
+            properties:
+                '@type':
+                    type: string
+                    description: The type of the serialized message.
+            additionalProperties: true
+            description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+        MarketBuyRequest:
+            type: object
+            properties:
+                productId:
+                    type: integer
+                    format: int64
+        MarketBuyResult:
+            type: object
+            properties:
+                productId:
+                    type: integer
+                    format: int64
+                billId:
+                    type: integer
+                    format: int64
+                fishId:
+                    type: integer
+                    format: int64
+                sellerUid:
+                    type: integer
+                    format: int64
+                fishName:
+                    type: string
+                sellerName:
+                    type: string
+                price:
+                    type: integer
+                    format: int64
+                settleTime:
+                    type: string
+        MarketDetailRequest:
+            type: object
+            properties:
+                productId:
+                    type: integer
+                    format: int64
+        MarketDetailResult:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                name:
+                    type: string
+                iconSourceId:
+                    type: integer
+                    format: int64
+                weight:
+                    type: integer
+                    format: int64
+                maxHeal:
+                    type: integer
+                    format: int64
+                heal:
+                    type: integer
+                    format: int64
+                recoverSpeed:
+                    type: integer
+                    format: int64
+                atk:
+                    type: integer
+                    format: int64
+                def:
+                    type: integer
+                    format: int64
+                earnSpeed:
+                    type: integer
+                    format: int64
+                dodge:
+                    type: integer
+                    format: int32
+                money:
+                    type: integer
+                    format: int64
+                personalityId:
+                    type: integer
+                    format: int64
+        MarketListRequest:
+            type: object
+            properties:
+                fishId:
+                    type: integer
+                    format: int64
+                weightStart:
+                    type: integer
+                    format: int64
+                weightEnd:
+                    type: integer
+                    format: int64
+                maxHealStart:
+                    type: integer
+                    format: int64
+                maxHealEnd:
+                    type: integer
+                    format: int64
+                healStart:
+                    type: integer
+                    format: int64
+                healEnd:
+                    type: integer
+                    format: int64
+                recoverSpeedStart:
+                    type: integer
+                    format: int64
+                recoverSpeedEnd:
+                    type: integer
+                    format: int64
+                atkStart:
+                    type: integer
+                    format: int64
+                atkEnd:
+                    type: integer
+                    format: int64
+                defStart:
+                    type: integer
+                    format: int64
+                defEnd:
+                    type: integer
+                    format: int64
+                earnSpeedStart:
+                    type: integer
+                    format: int64
+                earnSpeedEnd:
+                    type: integer
+                    format: int64
+                dodgeStart:
+                    type: integer
+                    format: int32
+                dodgeEnd:
+                    type: integer
+                    format: int32
+                personalityIds:
+                    type: array
+                    items:
+                        type: integer
+                        format: int32
+                ownSellFlag:
+                    type: integer
+                    format: int32
+                priceStart:
+                    type: integer
+                    format: int64
+                priceEnd:
+                    type: integer
+                    format: int64
+                page:
+                    type: integer
+                    format: int32
+                pageSize:
+                    type: integer
+                    format: int32
+        MarketListResult:
+            type: object
+            properties:
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MarketListResult_FishInfo'
+                currentPage:
+                    type: integer
+                    format: int32
+                pageSize:
+                    type: integer
+                    format: int32
+                totalPage:
+                    type: integer
+                    format: int32
+        MarketListResult_FishInfo:
+            type: object
+            properties:
+                productId:
+                    type: integer
+                    format: int64
+                fishId:
+                    type: integer
+                    format: int64
+                weight:
+                    type: integer
+                    format: int64
+                masterUid:
+                    type: integer
+                    format: int64
+                fishName:
+                    type: string
+                iconSourceId:
+                    type: integer
+                    format: int64
+                masterName:
+                    type: string
+                price:
+                    type: integer
+                    format: int64
+                sellTimeRemain:
+                    type: integer
+                    format: int64
+                extra:
+                    type: object
+                    additionalProperties:
+                        type: string
+        MarketMineListRequest:
+            type: object
+            properties: {}
+        MarketMineListResult:
+            type: object
+            properties:
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/MarketMineListResult_FishInfo'
+        MarketMineListResult_FishInfo:
+            type: object
+            properties:
+                productId:
+                    type: integer
+                    format: int64
+                fishId:
+                    type: integer
+                    format: int64
+                weight:
+                    type: integer
+                    format: int64
+                masterUid:
+                    type: integer
+                    format: int64
+                fishName:
+                    type: string
+                iconSourceId:
+                    type: integer
+                    format: int64
+                masterName:
+                    type: string
+                price:
+                    type: integer
+                    format: int64
+                sellTimeRemain:
+                    type: integer
+                    format: int64
+        MarketSellRequest:
+            type: object
+            properties:
+                fishId:
+                    type: integer
+                    format: int64
+                sellDuration:
+                    type: integer
+                    format: enum
+                price:
+                    type: integer
+                    format: int64
+        MarketSellResult:
+            type: object
+            properties:
+                commission:
+                    type: integer
+                    format: int64
+        MarketStopSellRequest:
+            type: object
+            properties:
+                productId:
+                    type: integer
+                    format: int64
+        MarketStopSellResult:
+            type: object
+            properties: {}
+        Status:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+                    format: int32
+                message:
+                    type: string
+                    description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+                details:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufAny'
+                    description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+            description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+tags:
+    - name: Market
