@@ -230,19 +230,23 @@ func (r *Robot) tryRandomOperateFish() error {
 	fish := r.memory.Fishes.FishList[fIdx]
 	var err error
 	if fish.Statue == sharedpb.FishStatus_alive {
-		//_, err = r.fishSleep(fish.FishId)
+		if fish.FishSkillCount > 5 {
+			_, err = r.fishSleep(fish.FishId)
+		}
 	} else if fish.Statue == sharedpb.FishStatus_sleep {
 		if fIdx%2 == 0 {
 			_, err = r.fishAlive(fish.FishId)
 		} else {
 			if fish.FishSkillCount > 5 {
 				_, err = r.marketSell(fish.FishId, 800+rand.Int63n(800))
+			} else {
+				_, err = r.fishAlive(fish.FishId)
 			}
 		}
 	} else if fish.Statue == sharedpb.FishStatus_dead {
 		_, err = r.fishRefining(fish.FishId)
 	} else if fish.Statue == sharedpb.FishStatus_up_sell {
-		_, err = r.marketStopSell(fish.FishId)
+		//_, err = r.marketStopSell(fish.FishId)
 	}
 	if err != nil {
 		if errors.Is(err, biz_errors.AuthError) {
