@@ -7,14 +7,18 @@ option java_package = "com.world.protobuf.shared.v1";
 option go_package = "new-world-robot/api/shared/v1;sharedpb";
 
 message PoolRank {
-  int64 fish_id = 1;
+  string fish_id = 1;
   int64 weight = 2;
   int64 master_uid = 3;
-  string fish_name = 4;
-  int64 icon_source_id = 5;
-  string master_name = 6;
-  int64 alive_time_ms = 7;
-  int32 rank = 8;
+  string master_name = 4;
+  int64 alive_time_ms = 5;
+  int32 rank = 6;
+  FreshFish fish = 7;
+}
+
+enum PoolRankType {
+  weight_rank = 0;
+  kills_rank = 1;
 }
 
 enum FishStatus {
@@ -25,7 +29,24 @@ enum FishStatus {
   refined = 4;
 }
 
+message FishStatistics {
+  optional int32 proactive_attack_count = 1;
+  optional int32 counter_attack_count = 2;
+  optional int32 kills = 3;
+  map<int32, int64> earn_detail = 4;
+}
+
+message FishEffect {
+  string name = 1;
+  int32 effect_type = 2;
+  int64 effect_expire_ms = 3;
+}
+
 message FreshFish {
+  message FishSkill {
+    int32 skill_id = 1;
+    int32 level = 2;
+  }
   int64 id = 1;
   string name = 2;
   int64 icon_source_id = 3;
@@ -38,7 +59,64 @@ message FreshFish {
   int64 earn_speed = 10;
   int32 dodge = 11;
   int64 money = 12;
-  FishStatus statue = 13;
-  int64 personality_id = 14;
+  FishStatus status = 13;
+  int32 personality_id = 14;
   int64 master_uid = 15;
+  repeated FishSkill fish_skills = 16;
+  int32 protect_count = 17;
+  int32 awaking_remain = 18;
+  FishStatistics fish_statistics = 19;
+  int32 level = 20;
+  repeated FishEffect effects = 21;
+  repeated FishGodhead godhead = 22;
+}
+
+message FishDetail {
+
+  string id = 1;
+  string name = 2;
+  int64 icon_source_id = 3;
+  int64 weight = 4;
+  int64 max_heal = 5;
+  int64 heal = 6;
+  int64 recover_speed = 7;
+  int64 atk = 8;
+  int64 def = 9;
+  int64 earn_speed = 10;
+  int32 dodge = 11;
+  int64 money = 12;
+  optional FishStatus status = 13;
+  int32 personality_id = 14;
+  string parking = 15;
+  repeated FishSkill fish_skills = 16;
+  optional int32 protect_count = 17;
+  string personality_name = 18;
+  optional int32 awaking_remain = 19;
+  optional int32 rating = 20;
+  FishStatistics fish_statistics = 21;
+  int32 level = 22;
+  repeated FishEffect effects = 23;
+  repeated FishGodhead godhead = 24;
+}
+
+
+message FishSkill {
+  string skill_id = 1;
+  string skill_name = 2;
+  string skill_desc = 3;
+  int32 skill_level = 4;
+}
+
+message FishGodhead {
+  int64 id = 1;
+  int32 level = 2;
+  string fish_name = 3;
+  string master_name = 4;
+}
+
+
+enum FishParkingStatus {
+  fish_parking_inactive = 0;
+  fish_parking_unused = 1;
+  fish_parking_used = 2;
 }

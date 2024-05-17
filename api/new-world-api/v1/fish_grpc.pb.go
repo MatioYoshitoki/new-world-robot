@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FishClient interface {
 	List(ctx context.Context, in *FishListRequest, opts ...grpc.CallOption) (*FishListResult, error)
+	DivestitureGodhead(ctx context.Context, in *DivestitureGodheadRequest, opts ...grpc.CallOption) (*DivestitureGodheadResult, error)
 	Refining(ctx context.Context, in *FishRefiningRequest, opts ...grpc.CallOption) (*FishRefiningResult, error)
 	Create(ctx context.Context, in *FishCreateRequest, opts ...grpc.CallOption) (*FishCreateResult, error)
 	PoolRank(ctx context.Context, in *FishPoolRankRequest, opts ...grpc.CallOption) (*FishPoolRankResult, error)
@@ -43,6 +44,15 @@ func NewFishClient(cc grpc.ClientConnInterface) FishClient {
 func (c *fishClient) List(ctx context.Context, in *FishListRequest, opts ...grpc.CallOption) (*FishListResult, error) {
 	out := new(FishListResult)
 	err := c.cc.Invoke(ctx, "/new_world.v1.Fish/List", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fishClient) DivestitureGodhead(ctx context.Context, in *DivestitureGodheadRequest, opts ...grpc.CallOption) (*DivestitureGodheadResult, error) {
+	out := new(DivestitureGodheadResult)
+	err := c.cc.Invoke(ctx, "/new_world.v1.Fish/DivestitureGodhead", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -117,6 +127,7 @@ func (c *fishClient) ParkingList(ctx context.Context, in *ParkingListRequest, op
 // for forward compatibility
 type FishServer interface {
 	List(context.Context, *FishListRequest) (*FishListResult, error)
+	DivestitureGodhead(context.Context, *DivestitureGodheadRequest) (*DivestitureGodheadResult, error)
 	Refining(context.Context, *FishRefiningRequest) (*FishRefiningResult, error)
 	Create(context.Context, *FishCreateRequest) (*FishCreateResult, error)
 	PoolRank(context.Context, *FishPoolRankRequest) (*FishPoolRankResult, error)
@@ -133,6 +144,9 @@ type UnimplementedFishServer struct {
 
 func (UnimplementedFishServer) List(context.Context, *FishListRequest) (*FishListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
+}
+func (UnimplementedFishServer) DivestitureGodhead(context.Context, *DivestitureGodheadRequest) (*DivestitureGodheadResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DivestitureGodhead not implemented")
 }
 func (UnimplementedFishServer) Refining(context.Context, *FishRefiningRequest) (*FishRefiningResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Refining not implemented")
@@ -182,6 +196,24 @@ func _Fish_List_Handler(srv interface{}, ctx context.Context, dec func(interface
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(FishServer).List(ctx, req.(*FishListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Fish_DivestitureGodhead_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DivestitureGodheadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FishServer).DivestitureGodhead(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/new_world.v1.Fish/DivestitureGodhead",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FishServer).DivestitureGodhead(ctx, req.(*DivestitureGodheadRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -322,6 +354,10 @@ var Fish_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _Fish_List_Handler,
+		},
+		{
+			MethodName: "DivestitureGodhead",
+			Handler:    _Fish_DivestitureGodhead_Handler,
 		},
 		{
 			MethodName: "Refining",

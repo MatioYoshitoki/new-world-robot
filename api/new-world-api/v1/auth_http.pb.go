@@ -20,14 +20,17 @@ var _ = binding.EncodeURL
 const _ = http.SupportPackageIsVersion1
 
 const OperationAuthAuth = "/new_world.v0.Auth/Auth"
+const OperationAuthInitTest = "/new_world.v0.Auth/InitTest"
 
 type AuthHTTPServer interface {
 	Auth(context.Context, *AuthRequest) (*AuthResult, error)
+	InitTest(context.Context, *InitTestRequest) (*InitTestResult, error)
 }
 
 func RegisterAuthHTTPServer(s *http.Server, srv AuthHTTPServer) {
 	r := s.Route("/")
 	r.POST("/api/v0/auth", _Auth_Auth0_HTTP_Handler(srv))
+	r.POST("/api/v0/init/test", _Auth_InitTest0_HTTP_Handler(srv))
 }
 
 func _Auth_Auth0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error {
@@ -49,8 +52,28 @@ func _Auth_Auth0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error {
 	}
 }
 
+func _Auth_InitTest0_HTTP_Handler(srv AuthHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in InitTestRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAuthInitTest)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.InitTest(ctx, req.(*InitTestRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*InitTestResult)
+		return ctx.Result(200, reply)
+	}
+}
+
 type AuthHTTPClient interface {
 	Auth(ctx context.Context, req *AuthRequest, opts ...http.CallOption) (rsp *AuthResult, err error)
+	InitTest(ctx context.Context, req *InitTestRequest, opts ...http.CallOption) (rsp *InitTestResult, err error)
 }
 
 type AuthHTTPClientImpl struct {
@@ -66,6 +89,19 @@ func (c *AuthHTTPClientImpl) Auth(ctx context.Context, in *AuthRequest, opts ...
 	pattern := "/api/v0/auth"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationAuthAuth))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *AuthHTTPClientImpl) InitTest(ctx context.Context, in *InitTestRequest, opts ...http.CallOption) (*InitTestResult, error) {
+	var out InitTestResult
+	pattern := "/api/v0/init/test"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationAuthInitTest))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

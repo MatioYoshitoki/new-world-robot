@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package new_world.v1;
+
+import "biz.proto";
+
+option go_package = "new-world-robot/api/new-world-api/v1;apipb";
+
+// The auth service definition.
+service InternalFish {
+  rpc UpdateUserFishStatus (UserFishStatusUpdateRequest) returns (UserFishStatusUpdateResult);
+}
+
+message UserFishStatusUpdateRequest {
+  int64 uid = 1;
+  int64 fish_id = 2;
+  shared.v1.FishStatus from = 3;
+  shared.v1.FishStatus to = 4;
+}
+
+message UserFishStatusUpdateResult {
+  int32 effect = 1;
+}

@@ -5,7 +5,7 @@ package new_world.v1;
 import "google/api/annotations.proto";
 import "biz.proto";
 
-option go_package = "new-world/api/new-world-api/v1;apipb";
+option go_package = "new-world-robot/api/new-world-api/v1;apipb";
 option java_multiple_files = true;
 option java_package = "com.world.protobuf.api.v1";
 option java_outer_classname = "FishProtoV1";
@@ -15,6 +15,13 @@ service Fish {
   rpc List (FishListRequest) returns (FishListResult) {
     option (google.api.http) = {
       post: "/api/v1/fish/list",
+      body: "*"
+    };
+  }
+
+  rpc DivestitureGodhead (DivestitureGodheadRequest) returns (DivestitureGodheadResult) {
+    option (google.api.http) = {
+      post: "/api/v1/fish/godhead/divestiture",
       body: "*"
     };
   }
@@ -65,12 +72,6 @@ service Fish {
   }
 }
 
-enum FishParkingStatus {
-  fish_parking_inactive = 0;
-  fish_parking_unused = 1;
-  fish_parking_used = 2;
-}
-
 enum Parking {
   Q = 0;
   W = 1;
@@ -80,20 +81,33 @@ enum Parking {
   F = 5;
 }
 
+message DivestitureGodheadRequest {
+  string fish_id = 1;
+  string godhead_id = 2;
+}
+
+message DivestitureGodheadResult {
+  string prop_id = 1;
+  int32 prop_type = 2;
+  string prop_name = 3;
+  string prop_remark = 4;
+  int64 price = 5;
+}
+
 message FishListRequest {}
 
 message FishPullRequest {}
 
 message FishRefiningRequest {
-  int64 fish_id = 1;
+  string fish_id = 1;
 }
 
 message ParkingListRequest {}
 
 message ParkingListResult {
   message ParkingDetail {
-    Parking parking = 1;
-    FishParkingStatus status = 2;
+    string parking = 1;
+    optional shared.v1.FishParkingStatus status = 2;
   }
   repeated ParkingDetail parking_list = 1;
 }
@@ -101,21 +115,27 @@ message ParkingListResult {
 message FishCreateRequest {}
 
 message FishCreateResult {
-  int64 id = 1;
-  string name = 2;
-  int64 icon_source_id = 3;
-  int64 weight = 4;
-  int64 max_heal = 5;
-  int64 heal = 6;
-  int64 recover_speed = 7;
-  int64 atk = 8;
-  int64 def = 9;
-  int64 earn_speed = 10;
-  int32 dodge = 11;
-  int64 money = 12;
-  shared.v1.FishStatus statue = 13;
-  int64 personality_id = 14;
-  string parking = 15;
+  optional string id = 1;
+  optional string name = 2;
+  optional int64 icon_source_id = 3;
+  optional int64 weight = 4;
+  optional int64 max_heal = 5;
+  optional int64 heal = 6;
+  optional int64 recover_speed = 7;
+  optional int64 atk = 8;
+  optional int64 def = 9;
+  optional int64 earn_speed = 10;
+  optional int32 dodge = 11;
+  optional int64 money = 12;
+  optional shared.v1.FishStatus status = 13;
+  optional int32 personality_id = 14;
+  optional string parking = 15;
+  string personality_name = 16;
+  optional int32 protect_count = 17;
+  optional int32 awaking_remain = 18;
+  optional int32 rating = 19;
+  optional int32 level = 20;
+  shared.v1.FishStatistics fish_statistics = 21;
 }
 
 message FishSleepRequest {
@@ -125,7 +145,7 @@ message FishSleepRequest {
 message FishSleepResult{}
 
 message FishAliveRequest {
-  int64 fish_id = 1;
+  string fish_id = 1;
 }
 
 message FishAliveResult {}
@@ -133,30 +153,13 @@ message FishAliveResult {}
 message FishPoolRankRequest {
   int32 page = 1;
   int32 page_size = 2;
-}
-
-message FishDetail {
-  int64 id = 1;
-  string name = 2;
-  int64 icon_source_id = 3;
-  int64 weight = 4;
-  int64 max_heal = 5;
-  int64 heal = 6;
-  int64 recover_speed = 7;
-  int64 atk = 8;
-  int64 def = 9;
-  int64 earn_speed = 10;
-  int32 dodge = 11;
-  int64 money = 12;
-  shared.v1.FishStatus statue = 13;
-  int64 personality_id = 14;
-  string parking = 15;
+  shared.v1.PoolRankType rank_type = 3;
 }
 
 
 message FishPullResult {
   message FishPull {
-    int64 id = 1;
+    string id = 1;
     int64 weight = 2;
     int64 max_heal = 3;
     int64 heal = 4;
@@ -165,7 +168,14 @@ message FishPullResult {
     int64 def = 7;
     int64 earn_speed = 8;
     int32 dodge = 9;
-    int64 money = 10;
+    optional int64 money = 10;
+    optional int32 protect_count = 11;
+    repeated shared.v1.FishSkill fish_skills = 12;
+    optional int32 awaking_remain = 13;
+    shared.v1.FishStatistics fish_statistics = 14;
+    int32 level = 15;
+    repeated shared.v1.FishEffect effects = 16;
+    repeated shared.v1.FishGodhead godhead = 17;
   }
   repeated FishPull list = 1;
   int64 ts_ms = 2;
@@ -173,7 +183,7 @@ message FishPullResult {
 
 
 message FishListResult {
-  repeated FishDetail list = 1;
+  repeated shared.v1.FishDetail list = 1;
 }
 
 message FishRefiningResult {
@@ -188,12 +198,21 @@ message FishRefiningResult {
 
 message FishPoolRankResult {
   message MyFishRank {
-    int64 fish_id = 1;
+    string fish_id = 1;
     string fish_name = 2;
     int64 fish_icon_source_id = 3;
     int32 rank = 4;
   }
-  repeated shared.v1.PoolRank list = 1;
+  message PoolRank {
+    string fish_id = 1;
+    int64 weight = 2;
+    int64 master_uid = 3;
+    string master_name = 4;
+    int64 alive_time_ms = 5;
+    int32 rank = 6;
+    shared.v1.FishDetail fish = 7;
+  }
+  repeated PoolRank list = 1;
   repeated MyFishRank myFishRankList = 2;
   int32 current_page = 3;
   int32 page_size = 4;

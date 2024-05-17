@@ -144,9 +144,9 @@ func (r *Robot) Work(waterId int64) {
 
 func (r *Robot) parkingCountByStatus() (usefulCount, inactiveCount int) {
 	for _, status := range r.memory.ParkingMap {
-		if status == apipb.FishParkingStatus_fish_parking_unused.String() {
+		if status == sharedpb.FishParkingStatus_fish_parking_unused.String() {
 			usefulCount++
-		} else if status == apipb.FishParkingStatus_fish_parking_inactive.String() {
+		} else if status == sharedpb.FishParkingStatus_fish_parking_inactive.String() {
 			inactiveCount++
 		}
 	}
@@ -164,8 +164,9 @@ func (r *Robot) tryRefreshFishList() error {
 	fs := make([]*v1.RobotMemory_Fishes_Fish, len(fishes.List))
 	for i, d := range fishes.List {
 		fs[i] = &v1.RobotMemory_Fishes_Fish{
-			FishId: d.Id,
-			Statue: d.Statue,
+			FishId:         d.Id,
+			Statue:         *d.Status,
+			FishSkillCount: int32(len(d.FishSkills)),
 		}
 	}
 	r.memory.Fishes.FishList = fs
@@ -188,9 +189,9 @@ func (r *Robot) tryRefreshAssets() error {
 		}
 		return err
 	} else {
-		r.memory.Assets.Gold = assetRst.Gold
-		r.memory.Assets.Exp = assetRst.Exp
-		r.memory.Assets.Level = assetRst.Level
+		r.memory.Assets.Gold = *assetRst.Gold
+		r.memory.Assets.Exp = *assetRst.Exp
+		r.memory.Assets.Level = *assetRst.Level
 	}
 	r.randomSleep()
 	return nil
@@ -216,7 +217,7 @@ func (r *Robot) tryRefreshParkingMap() error {
 		return err
 	} else {
 		for _, parking := range parkingListResult.ParkingList {
-			r.memory.ParkingMap[parking.Parking.String()] = parking.Status.String()
+			r.memory.ParkingMap[parking.Parking] = sharedpb.FishParkingStatus_name[int32(*parking.Status)]
 		}
 	}
 	r.randomSleep()
@@ -229,28 +230,25 @@ func (r *Robot) tryRandomOperateFish() error {
 	fish := r.memory.Fishes.FishList[fIdx]
 	var err error
 	if fish.Statue == sharedpb.FishStatus_alive {
-		_, err = r.fishSleep(fish.FishId)
+		//_, err = r.fishSleep(fish.FishId)
 	} else if fish.Statue == sharedpb.FishStatus_sleep {
 		if fIdx%2 == 0 {
 			_, err = r.fishAlive(fish.FishId)
 		} else {
-			_, err = r.marketSell(fish.FishId, 800+rand.Int63n(800))
+			if fish.FishSkillCount > 5 {
+				_, err = r.marketSell(fish.FishId, 800+rand.Int63n(800))
+			}
 		}
 	} else if fish.Statue == sharedpb.FishStatus_dead {
 		_, err = r.fishRefining(fish.FishId)
 	} else if fish.Statue == sharedpb.FishStatus_up_sell {
-		if pid, ok := r.memory.MineFishProductRelation[fish.FishId]; ok {
-			_, err = r.marketStopSell(pid)
-		} else {
-			log.Warnf("who's fish? %d", fish.FishId)
-			_ = r.tryRandomOperateFish()
-		}
+		_, err = r.marketStopSell(fish.FishId)
 	}
 	if err != nil {
 		if errors.Is(err, biz_errors.AuthError) {
 			r.forgetMe()
 		}
-		log.Errorf("fishId: %d, fishStatus: %d", fish.FishId, fish.Statue)
+		log.Errorf("fishId: %s, fishStatus: %d", fish.FishId, fish.Statue)
 		return err
 	}
 	r.randomSleep()
@@ -320,7 +318,7 @@ func (r *Robot) tryMarketMineList() error {
 		}
 		return err
 	} else {
-		r.memory.MineFishProductRelation = make(map[int64]int64)
+		r.memory.MineFishProductRelation = make(map[string]string)
 		for _, market := range rst.GetList() {
 			r.memory.MineFishProductRelation[market.FishId] = market.ProductId
 		}
@@ -414,7 +412,7 @@ func (r *Robot) fishList() (*apipb.FishListResult, error) {
 	return &rst.Data, nil
 }
 
-func (r *Robot) fishSleep(fishId int64) (*apipb.FishSleepResult, error) {
+func (r *Robot) fishSleep(fishId string) (*apipb.FishSleepResult, error) {
 	start := time.Now().UnixMilli()
 	defer r.countDown(start, r.bs.App.FishSleepUrl)
 	param := convert.StringToBytes(fmt.Sprintf(consts.OnlyFishIdParamTemplate, fishId))
@@ -439,7 +437,7 @@ func (r *Robot) fishSleep(fishId int64) (*apipb.FishSleepResult, error) {
 	return &rst.Data, nil
 }
 
-func (r *Robot) fishAlive(fishId int64) (*apipb.FishAliveResult, error) {
+func (r *Robot) fishAlive(fishId string) (*apipb.FishAliveResult, error) {
 	start := time.Now().UnixMilli()
 	defer r.countDown(start, r.bs.App.FishAliveUrl)
 	param := convert.StringToBytes(fmt.Sprintf(consts.OnlyFishIdParamTemplate, fishId))
@@ -464,7 +462,7 @@ func (r *Robot) fishAlive(fishId int64) (*apipb.FishAliveResult, error) {
 	return &rst.Data, nil
 }
 
-func (r *Robot) fishRefining(fishId int64) (*apipb.FishRefiningResult, error) {
+func (r *Robot) fishRefining(fishId string) (*apipb.FishRefiningResult, error) {
 	start := time.Now().UnixMilli()
 	defer r.countDown(start, r.bs.App.FishRefiningUrl)
 	param := convert.StringToBytes(fmt.Sprintf(consts.OnlyFishIdParamTemplate, fishId))
@@ -602,7 +600,7 @@ func (r *Robot) marketDetail(productId int64) (*apipb.MarketDetailResult, error)
 	return &rst.Data, nil
 }
 
-func (r *Robot) marketSell(fishId, price int64) (*apipb.MarketSellResult, error) {
+func (r *Robot) marketSell(fishId string, price int64) (*apipb.MarketSellResult, error) {
 	start := time.Now().UnixMilli()
 	defer r.countDown(start, r.bs.App.MarketSellUrl)
 	param := convert.StringToBytes(fmt.Sprintf(consts.MarketSellParamTemplate, fishId, price))
@@ -622,10 +620,10 @@ func (r *Robot) marketSell(fishId, price int64) (*apipb.MarketSellResult, error)
 	return &rst.Data, nil
 }
 
-func (r *Robot) marketStopSell(productId int64) (*apipb.MarketStopSellResult, error) {
+func (r *Robot) marketStopSell(fishId string) (*apipb.MarketStopSellResult, error) {
 	start := time.Now().UnixMilli()
 	defer r.countDown(start, r.bs.App.MarketStopSellUrl)
-	param := convert.StringToBytes(fmt.Sprintf(consts.OnlyProductIdParamTemplate, productId))
+	param := convert.StringToBytes(fmt.Sprintf(consts.OnlyFishIdParamTemplate, fishId))
 	request, err := r.basePostRequest(r.bs.App.MarketStopSellUrl, bytes.NewBuffer(param))
 	if err != nil {
 		return nil, err
@@ -642,7 +640,7 @@ func (r *Robot) marketStopSell(productId int64) (*apipb.MarketStopSellResult, er
 	return &rst.Data, nil
 }
 
-func (r *Robot) marketBuy(productId int64) (*apipb.MarketBuyResult, error) {
+func (r *Robot) marketBuy(productId string) (*apipb.MarketBuyResult, error) {
 	start := time.Now().UnixMilli()
 	defer r.countDown(start, r.bs.App.MarketBuyUrl)
 	param := convert.StringToBytes(fmt.Sprintf(consts.OnlyProductIdParamTemplate, productId))

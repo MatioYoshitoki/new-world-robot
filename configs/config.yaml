@@ -16,7 +16,7 @@ data:
 app:
   runner_group_size: 16
   report_path: ../../
-  base_url: "http://127.0.0.1:8002"
+  base_url: "http://14.103.9.84:8002"
   auth_url: "/api/v0/auth"
   asset_url: "/api/v1/user/asset"
   create_fish_url: "/api/v1/fish/create"

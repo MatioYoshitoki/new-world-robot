@@ -23,6 +23,7 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthClient interface {
 	Auth(ctx context.Context, in *AuthRequest, opts ...grpc.CallOption) (*AuthResult, error)
+	InitTest(ctx context.Context, in *InitTestRequest, opts ...grpc.CallOption) (*InitTestResult, error)
 }
 
 type authClient struct {
@@ -42,11 +43,21 @@ func (c *authClient) Auth(ctx context.Context, in *AuthRequest, opts ...grpc.Cal
 	return out, nil
 }
 
+func (c *authClient) InitTest(ctx context.Context, in *InitTestRequest, opts ...grpc.CallOption) (*InitTestResult, error) {
+	out := new(InitTestResult)
+	err := c.cc.Invoke(ctx, "/new_world.v0.Auth/InitTest", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServer is the server API for Auth service.
 // All implementations must embed UnimplementedAuthServer
 // for forward compatibility
 type AuthServer interface {
 	Auth(context.Context, *AuthRequest) (*AuthResult, error)
+	InitTest(context.Context, *InitTestRequest) (*InitTestResult, error)
 	mustEmbedUnimplementedAuthServer()
 }
 
@@ -56,6 +67,9 @@ type UnimplementedAuthServer struct {
 
 func (UnimplementedAuthServer) Auth(context.Context, *AuthRequest) (*AuthResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Auth not implemented")
+}
+func (UnimplementedAuthServer) InitTest(context.Context, *InitTestRequest) (*InitTestResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InitTest not implemented")
 }
 func (UnimplementedAuthServer) mustEmbedUnimplementedAuthServer() {}
 
@@ -88,6 +102,24 @@ func _Auth_Auth_Handler(srv interface{}, ctx context.Context, dec func(interface
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Auth_InitTest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InitTestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServer).InitTest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/new_world.v0.Auth/InitTest",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServer).InitTest(ctx, req.(*InitTestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Auth_ServiceDesc is the grpc.ServiceDesc for Auth service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -98,6 +130,10 @@ var Auth_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Auth",
 			Handler:    _Auth_Auth_Handler,
+		},
+		{
+			MethodName: "InitTest",
+			Handler:    _Auth_InitTest_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

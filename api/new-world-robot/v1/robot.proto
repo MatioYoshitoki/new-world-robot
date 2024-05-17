@@ -18,13 +18,14 @@ message RobotMemory {
   }
   message Fishes {
     message Fish {
-      int64 fish_id = 1;
+      string fish_id = 1;
+      int32 fish_skill_count = 2;
       shared.v1.FishStatus statue = 13;
     }
     repeated Fish fish_list = 1;
   }
   message Market {
-    int64 product_id = 1;
+    string product_id = 1;
     int64 price = 2;
   }
   Auth auth = 1;
@@ -32,5 +33,5 @@ message RobotMemory {
   Fishes fishes = 3;
   map<string, string> parkingMap = 4;
   repeated Market marketMap = 5;
-  map<int64, int64> mine_fish_product_relation = 6;
+  map<string, string> mine_fish_product_relation = 6;
 }

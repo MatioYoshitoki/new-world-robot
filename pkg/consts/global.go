@@ -18,15 +18,15 @@ const (
 		{"account": "%s", "password": "%s", "auth_type": 0}
 	`
 	OnlyFishIdParamTemplate = `
-		{"fish_id": %d}
+		{"fish_id": "%s"}
 	`
 	OnlyPageParamTemplate = `
 		{"page": %d, "page_size": %d}
 	`
 	OnlyProductIdParamTemplate = `
-		{"product_id": %d}
+		{"product_id": "%s"}
 	`
 	MarketSellParamTemplate = `
-		{"fish_id": %d, "sell_duration": 0, "price": %d}
+		{"fish_id": "%s", "sell_duration": 0, "price": %d}
 	`
 )

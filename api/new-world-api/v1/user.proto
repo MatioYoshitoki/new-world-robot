@@ -3,23 +3,43 @@ syntax = "proto3";
 package new_world.v1;
 
 import "google/api/annotations.proto";
+import "biz.proto";
 
 
-option go_package = "new-world/api/new-world-api/v1;apipb";
+option go_package = "new-world-robot/api/new-world-api/v1;apipb";
 option java_multiple_files = true;
 option java_package = "com.world.protobuf.api.v1";
 option java_outer_classname = "UserProtoV1";
 
 service User {
+  rpc Configs(ConfigsRequest) returns (ConfigsResult) {
+    option (google.api.http) = {
+      post: "/api/v1/user/configs",
+      body: "*"
+    };
+  }
+
   rpc Sign (SignRequest) returns (SignResult) {
     option (google.api.http) = {
       post: "/api/v1/user/sign",
       body: "*"
     };
   }
+  rpc BaseInfo(BaseInfoRequest) returns(BaseInfoResult) {
+    option (google.api.http) = {
+      post: "/api/v1/user/info",
+      body: "*"
+    };
+  }
   rpc Asset (AssetRequest) returns (AssetResult) {
     option (google.api.http) = {
       post: "/api/v1/user/asset",
+      body: "*"
+    };
+  }
+  rpc Props (PropListRequest) returns (PropListResult) {
+    option (google.api.http) = {
+      post: "/api/v1/user/props",
       body: "*"
     };
   }
@@ -41,6 +61,51 @@ service User {
       body: "*"
     };
   }
+  rpc EmbedGodhead (EmbedGodheadRequest) returns (EmbedGodheadResult) {
+    option (google.api.http) = {
+      post: "/api/v1/user/godhead/embed",
+      body: "*"
+    };
+  }
+  rpc GodheadList (GodheadListRequest) returns (GodheadListResult) {
+    option (google.api.http) = {
+      post: "/api/v1/user/godhead/list",
+      body: "*"
+    };
+  }
+
+  rpc Skills (UserSkillsRequest) returns (UserSkillsResult) {
+    option (google.api.http) = {
+      post: "/api/v1/user/skills",
+      body: "*"
+    };
+  }
+  rpc HealFish (HealFishRequest) returns (HealFishResult) {
+    option (google.api.http) = {
+      post: "/api/v1/user/heal/fish",
+      body: "*"
+    };
+  }
+  rpc CrazyFish (FishCrazyRequest) returns (CrazyFishResult) {
+    option (google.api.http) = {
+      post: "/api/v1/user/crazy/fish",
+      body: "*"
+    };
+  }
+
+  rpc ShadowFish (FishShadowRequest) returns (ShadowFishResult) {
+    option (google.api.http) = {
+      post: "/api/v1/user/shadow/fish",
+      body: "*"
+    };
+  }
+  rpc FeedFish (FeedFishRequest) returns (FeedFishResult) {
+    option (google.api.http) = {
+      post: "/api/v1/user/feed/fish",
+      body: "*"
+    };
+  }
+
   rpc SkillUpgrade (SkillUpgradeRequest) returns (SkillUpgradeResult) {
     option (google.api.http) = {
       post: "/api/v1/user/skill/upgrade",
@@ -55,6 +120,51 @@ service User {
   }
 }
 
+message EmbedGodheadRequest {
+  string prop_id = 1;
+  optional string replaced_godhead_id = 2;
+}
+
+message EmbedGodheadResult {}
+
+message GodheadListRequest {}
+
+message GodheadListResult {
+  message Godhead {
+    int64 id = 1;
+    int32 level = 2;
+    string fish_name = 3;
+    string master_name = 4;
+  }
+  repeated Godhead list = 1;
+}
+
+message UserSkillsRequest {}
+
+message ConfigsRequest {}
+
+message ConfigsResult {
+  message FishSkillName {
+    string name = 1;
+    map<int32, string> level_name = 2;
+  }
+  map<int32, string> fish_level_name = 1;
+  map<int32, FishSkillName> fish_skill_name = 2;
+}
+
+message UserSkillsResult {
+  message UserSkill {
+    int32 id = 1;
+    string name = 2;
+    optional int32 level = 3;
+    string desc = 4;
+    optional int64 cold_down_at_ms = 5;
+    optional int32 upgrade_required_level = 6;
+    optional int64 upgrade_required_gold = 7;
+  }
+  repeated UserSkill skills = 1;
+}
+
 message SignRequest {}
 
 message SignResult {}
@@ -62,9 +172,9 @@ message SignResult {}
 message AssetRequest {}
 
 message AssetResult {
-  int32 level = 1;
-  int64 exp = 2;
-  int64 gold = 3;
+  optional int32 level = 1;
+  optional int64 exp = 2;
+  optional int64 gold = 3;
 }
 
 enum RankType {
@@ -79,28 +189,116 @@ enum PropStatus {
 
 message RankRequest {
   RankType rank_type = 1;
+  int32 page = 2;
+  int32 page_size = 3;
 }
 
-message RankResult {}
+message RankResult {
+  message UserLevelRank {
+    message Rank {
+      string uid = 1;
+      string username = 2;
+      int32 rank = 3;
+      int32 level = 4;
+      int64 exp = 5;
+    }
+    repeated Rank ranks = 1;
+    int32 current_page = 2;
+    int32 page_size = 3;
+    int32 total_page = 4;
+  }
+  UserLevelRank user_level_rank = 1;
+}
 
 message ExpandParkingRequest {}
 
-message ExpandParkingResult {}
-
-message EatRequest {
-  int64 prop_id = 1;
+message ExpandParkingResult {
+  string parking = 1;
+  optional shared.v1.FishParkingStatus status = 2;
+  int64 cost = 3;
 }
 
-message EatResult {}
+message BaseInfoRequest{}
+
+message BaseInfoResult{
+  string username = 1;
+  string avatar = 2;
+}
+
+message EatRequest {
+  string prop_id = 1;
+}
+
+message HealFishRequest {
+  string fish_id = 1;
+}
+
+message HealFishResult {
+  int64 incr_hp = 1;
+  int64 heal_skill_cold_down_at_ms = 2;
+  int64 cost = 3;
+}
+
+message FishCrazyRequest {
+  string fish_id = 1;
+}
+
+message CrazyFishResult {
+  int64 crazy_skill_cold_down_at_ms = 1;
+  int64 crazy_duration_at_ms = 2;
+  int64 cost = 3;
+}
+
+message FishShadowRequest {
+  string fish_id = 1;
+}
+
+message ShadowFishResult {
+  int64 shadow_skill_cold_down_at_ms = 1;
+  int64 shadow_duration_at_ms = 2;
+  int64 cost = 3;
+}
+
+message FeedFishRequest {
+  string fish_id = 1;
+}
+
+message FeedFishResult {
+  int64 feed_skill_cold_down_at_ms = 1;
+  int64 feed_weight = 2;
+  int64 cost = 3;
+}
+
+message PropListRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+}
+
+message PropListResult {
+  message Prop {
+    string prop_id = 1;
+    string prop_name = 2;
+    map<string, string> extra = 3;
+  }
+  repeated Prop list = 1;
+  int32 current_page = 2;
+  int32 page_size = 3;
+  int32 total_page = 4;
+}
+
+message EatResult {
+  optional int64 exp = 1;
+  optional int32 level_up_count = 2;
+}
 
 message SkillUpgradeRequest {
-  int64 skill_id = 1;
+  int32 skill_id = 1;
 }
 
 message SkillUpgradeResult {}
 
 message BuildingUpgradeRequest {
-  int64 building_id = 1;
+  int32 building_id = 1;
 }
 
 message BuildingUpgradeResult {}

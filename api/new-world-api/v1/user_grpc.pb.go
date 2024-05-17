@@ -22,11 +22,21 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserClient interface {
+	Configs(ctx context.Context, in *ConfigsRequest, opts ...grpc.CallOption) (*ConfigsResult, error)
 	Sign(ctx context.Context, in *SignRequest, opts ...grpc.CallOption) (*SignResult, error)
+	BaseInfo(ctx context.Context, in *BaseInfoRequest, opts ...grpc.CallOption) (*BaseInfoResult, error)
 	Asset(ctx context.Context, in *AssetRequest, opts ...grpc.CallOption) (*AssetResult, error)
+	Props(ctx context.Context, in *PropListRequest, opts ...grpc.CallOption) (*PropListResult, error)
 	Rank(ctx context.Context, in *RankRequest, opts ...grpc.CallOption) (*RankResult, error)
 	ExpandParking(ctx context.Context, in *ExpandParkingRequest, opts ...grpc.CallOption) (*ExpandParkingResult, error)
 	Eat(ctx context.Context, in *EatRequest, opts ...grpc.CallOption) (*EatResult, error)
+	EmbedGodhead(ctx context.Context, in *EmbedGodheadRequest, opts ...grpc.CallOption) (*EmbedGodheadResult, error)
+	GodheadList(ctx context.Context, in *GodheadListRequest, opts ...grpc.CallOption) (*GodheadListResult, error)
+	Skills(ctx context.Context, in *UserSkillsRequest, opts ...grpc.CallOption) (*UserSkillsResult, error)
+	HealFish(ctx context.Context, in *HealFishRequest, opts ...grpc.CallOption) (*HealFishResult, error)
+	CrazyFish(ctx context.Context, in *FishCrazyRequest, opts ...grpc.CallOption) (*CrazyFishResult, error)
+	ShadowFish(ctx context.Context, in *FishShadowRequest, opts ...grpc.CallOption) (*ShadowFishResult, error)
+	FeedFish(ctx context.Context, in *FeedFishRequest, opts ...grpc.CallOption) (*FeedFishResult, error)
 	SkillUpgrade(ctx context.Context, in *SkillUpgradeRequest, opts ...grpc.CallOption) (*SkillUpgradeResult, error)
 	BuildingUpgrade(ctx context.Context, in *BuildingUpgradeRequest, opts ...grpc.CallOption) (*BuildingUpgradeResult, error)
 }
@@ -39,6 +49,15 @@ func NewUserClient(cc grpc.ClientConnInterface) UserClient {
 	return &userClient{cc}
 }
 
+func (c *userClient) Configs(ctx context.Context, in *ConfigsRequest, opts ...grpc.CallOption) (*ConfigsResult, error) {
+	out := new(ConfigsResult)
+	err := c.cc.Invoke(ctx, "/new_world.v1.User/Configs", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userClient) Sign(ctx context.Context, in *SignRequest, opts ...grpc.CallOption) (*SignResult, error) {
 	out := new(SignResult)
 	err := c.cc.Invoke(ctx, "/new_world.v1.User/Sign", in, out, opts...)
@@ -48,9 +67,27 @@ func (c *userClient) Sign(ctx context.Context, in *SignRequest, opts ...grpc.Cal
 	return out, nil
 }
 
+func (c *userClient) BaseInfo(ctx context.Context, in *BaseInfoRequest, opts ...grpc.CallOption) (*BaseInfoResult, error) {
+	out := new(BaseInfoResult)
+	err := c.cc.Invoke(ctx, "/new_world.v1.User/BaseInfo", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userClient) Asset(ctx context.Context, in *AssetRequest, opts ...grpc.CallOption) (*AssetResult, error) {
 	out := new(AssetResult)
 	err := c.cc.Invoke(ctx, "/new_world.v1.User/Asset", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) Props(ctx context.Context, in *PropListRequest, opts ...grpc.CallOption) (*PropListResult, error) {
+	out := new(PropListResult)
+	err := c.cc.Invoke(ctx, "/new_world.v1.User/Props", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -84,6 +121,69 @@ func (c *userClient) Eat(ctx context.Context, in *EatRequest, opts ...grpc.CallO
 	return out, nil
 }
 
+func (c *userClient) EmbedGodhead(ctx context.Context, in *EmbedGodheadRequest, opts ...grpc.CallOption) (*EmbedGodheadResult, error) {
+	out := new(EmbedGodheadResult)
+	err := c.cc.Invoke(ctx, "/new_world.v1.User/EmbedGodhead", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) GodheadList(ctx context.Context, in *GodheadListRequest, opts ...grpc.CallOption) (*GodheadListResult, error) {
+	out := new(GodheadListResult)
+	err := c.cc.Invoke(ctx, "/new_world.v1.User/GodheadList", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) Skills(ctx context.Context, in *UserSkillsRequest, opts ...grpc.CallOption) (*UserSkillsResult, error) {
+	out := new(UserSkillsResult)
+	err := c.cc.Invoke(ctx, "/new_world.v1.User/Skills", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) HealFish(ctx context.Context, in *HealFishRequest, opts ...grpc.CallOption) (*HealFishResult, error) {
+	out := new(HealFishResult)
+	err := c.cc.Invoke(ctx, "/new_world.v1.User/HealFish", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) CrazyFish(ctx context.Context, in *FishCrazyRequest, opts ...grpc.CallOption) (*CrazyFishResult, error) {
+	out := new(CrazyFishResult)
+	err := c.cc.Invoke(ctx, "/new_world.v1.User/CrazyFish", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) ShadowFish(ctx context.Context, in *FishShadowRequest, opts ...grpc.CallOption) (*ShadowFishResult, error) {
+	out := new(ShadowFishResult)
+	err := c.cc.Invoke(ctx, "/new_world.v1.User/ShadowFish", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) FeedFish(ctx context.Context, in *FeedFishRequest, opts ...grpc.CallOption) (*FeedFishResult, error) {
+	out := new(FeedFishResult)
+	err := c.cc.Invoke(ctx, "/new_world.v1.User/FeedFish", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userClient) SkillUpgrade(ctx context.Context, in *SkillUpgradeRequest, opts ...grpc.CallOption) (*SkillUpgradeResult, error) {
 	out := new(SkillUpgradeResult)
 	err := c.cc.Invoke(ctx, "/new_world.v1.User/SkillUpgrade", in, out, opts...)
@@ -106,11 +206,21 @@ func (c *userClient) BuildingUpgrade(ctx context.Context, in *BuildingUpgradeReq
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
 type UserServer interface {
+	Configs(context.Context, *ConfigsRequest) (*ConfigsResult, error)
 	Sign(context.Context, *SignRequest) (*SignResult, error)
+	BaseInfo(context.Context, *BaseInfoRequest) (*BaseInfoResult, error)
 	Asset(context.Context, *AssetRequest) (*AssetResult, error)
+	Props(context.Context, *PropListRequest) (*PropListResult, error)
 	Rank(context.Context, *RankRequest) (*RankResult, error)
 	ExpandParking(context.Context, *ExpandParkingRequest) (*ExpandParkingResult, error)
 	Eat(context.Context, *EatRequest) (*EatResult, error)
+	EmbedGodhead(context.Context, *EmbedGodheadRequest) (*EmbedGodheadResult, error)
+	GodheadList(context.Context, *GodheadListRequest) (*GodheadListResult, error)
+	Skills(context.Context, *UserSkillsRequest) (*UserSkillsResult, error)
+	HealFish(context.Context, *HealFishRequest) (*HealFishResult, error)
+	CrazyFish(context.Context, *FishCrazyRequest) (*CrazyFishResult, error)
+	ShadowFish(context.Context, *FishShadowRequest) (*ShadowFishResult, error)
+	FeedFish(context.Context, *FeedFishRequest) (*FeedFishResult, error)
 	SkillUpgrade(context.Context, *SkillUpgradeRequest) (*SkillUpgradeResult, error)
 	BuildingUpgrade(context.Context, *BuildingUpgradeRequest) (*BuildingUpgradeResult, error)
 	mustEmbedUnimplementedUserServer()
@@ -120,11 +230,20 @@ type UserServer interface {
 type UnimplementedUserServer struct {
 }
 
+func (UnimplementedUserServer) Configs(context.Context, *ConfigsRequest) (*ConfigsResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Configs not implemented")
+}
 func (UnimplementedUserServer) Sign(context.Context, *SignRequest) (*SignResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Sign not implemented")
 }
+func (UnimplementedUserServer) BaseInfo(context.Context, *BaseInfoRequest) (*BaseInfoResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BaseInfo not implemented")
+}
 func (UnimplementedUserServer) Asset(context.Context, *AssetRequest) (*AssetResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Asset not implemented")
+}
+func (UnimplementedUserServer) Props(context.Context, *PropListRequest) (*PropListResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Props not implemented")
 }
 func (UnimplementedUserServer) Rank(context.Context, *RankRequest) (*RankResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Rank not implemented")
@@ -134,6 +253,27 @@ func (UnimplementedUserServer) ExpandParking(context.Context, *ExpandParkingRequ
 }
 func (UnimplementedUserServer) Eat(context.Context, *EatRequest) (*EatResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Eat not implemented")
+}
+func (UnimplementedUserServer) EmbedGodhead(context.Context, *EmbedGodheadRequest) (*EmbedGodheadResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EmbedGodhead not implemented")
+}
+func (UnimplementedUserServer) GodheadList(context.Context, *GodheadListRequest) (*GodheadListResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GodheadList not implemented")
+}
+func (UnimplementedUserServer) Skills(context.Context, *UserSkillsRequest) (*UserSkillsResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Skills not implemented")
+}
+func (UnimplementedUserServer) HealFish(context.Context, *HealFishRequest) (*HealFishResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method HealFish not implemented")
+}
+func (UnimplementedUserServer) CrazyFish(context.Context, *FishCrazyRequest) (*CrazyFishResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CrazyFish not implemented")
+}
+func (UnimplementedUserServer) ShadowFish(context.Context, *FishShadowRequest) (*ShadowFishResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ShadowFish not implemented")
+}
+func (UnimplementedUserServer) FeedFish(context.Context, *FeedFishRequest) (*FeedFishResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FeedFish not implemented")
 }
 func (UnimplementedUserServer) SkillUpgrade(context.Context, *SkillUpgradeRequest) (*SkillUpgradeResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SkillUpgrade not implemented")
@@ -154,6 +294,24 @@ func RegisterUserServer(s grpc.ServiceRegistrar, srv UserServer) {
 	s.RegisterService(&User_ServiceDesc, srv)
 }
 
+func _User_Configs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConfigsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).Configs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/new_world.v1.User/Configs",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).Configs(ctx, req.(*ConfigsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _User_Sign_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SignRequest)
 	if err := dec(in); err != nil {
@@ -172,6 +330,24 @@ func _User_Sign_Handler(srv interface{}, ctx context.Context, dec func(interface
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_BaseInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BaseInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).BaseInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/new_world.v1.User/BaseInfo",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).BaseInfo(ctx, req.(*BaseInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _User_Asset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(AssetRequest)
 	if err := dec(in); err != nil {
@@ -186,6 +362,24 @@ func _User_Asset_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).Asset(ctx, req.(*AssetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_Props_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PropListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).Props(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/new_world.v1.User/Props",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).Props(ctx, req.(*PropListRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -244,6 +438,132 @@ func _User_Eat_Handler(srv interface{}, ctx context.Context, dec func(interface{
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_EmbedGodhead_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EmbedGodheadRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).EmbedGodhead(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/new_world.v1.User/EmbedGodhead",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).EmbedGodhead(ctx, req.(*EmbedGodheadRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_GodheadList_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GodheadListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).GodheadList(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/new_world.v1.User/GodheadList",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).GodheadList(ctx, req.(*GodheadListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_Skills_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserSkillsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).Skills(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/new_world.v1.User/Skills",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).Skills(ctx, req.(*UserSkillsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_HealFish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HealFishRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).HealFish(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/new_world.v1.User/HealFish",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).HealFish(ctx, req.(*HealFishRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_CrazyFish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FishCrazyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).CrazyFish(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/new_world.v1.User/CrazyFish",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).CrazyFish(ctx, req.(*FishCrazyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_ShadowFish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FishShadowRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).ShadowFish(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/new_world.v1.User/ShadowFish",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).ShadowFish(ctx, req.(*FishShadowRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_FeedFish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FeedFishRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).FeedFish(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/new_world.v1.User/FeedFish",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).FeedFish(ctx, req.(*FeedFishRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _User_SkillUpgrade_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(SkillUpgradeRequest)
 	if err := dec(in); err != nil {
@@ -288,12 +608,24 @@ var User_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*UserServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "Configs",
+			Handler:    _User_Configs_Handler,
+		},
+		{
 			MethodName: "Sign",
 			Handler:    _User_Sign_Handler,
 		},
 		{
+			MethodName: "BaseInfo",
+			Handler:    _User_BaseInfo_Handler,
+		},
+		{
 			MethodName: "Asset",
 			Handler:    _User_Asset_Handler,
+		},
+		{
+			MethodName: "Props",
+			Handler:    _User_Props_Handler,
 		},
 		{
 			MethodName: "Rank",
@@ -306,6 +638,34 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Eat",
 			Handler:    _User_Eat_Handler,
+		},
+		{
+			MethodName: "EmbedGodhead",
+			Handler:    _User_EmbedGodhead_Handler,
+		},
+		{
+			MethodName: "GodheadList",
+			Handler:    _User_GodheadList_Handler,
+		},
+		{
+			MethodName: "Skills",
+			Handler:    _User_Skills_Handler,
+		},
+		{
+			MethodName: "HealFish",
+			Handler:    _User_HealFish_Handler,
+		},
+		{
+			MethodName: "CrazyFish",
+			Handler:    _User_CrazyFish_Handler,
+		},
+		{
+			MethodName: "ShadowFish",
+			Handler:    _User_ShadowFish_Handler,
+		},
+		{
+			MethodName: "FeedFish",
+			Handler:    _User_FeedFish_Handler,
 		},
 		{
 			MethodName: "SkillUpgrade",
