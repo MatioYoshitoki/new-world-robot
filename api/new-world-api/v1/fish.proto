@@ -70,6 +70,18 @@ service Fish {
       body: "*"
     };
   }
+  rpc DeadRecords (FishDeadRecordsRequest) returns (FishDeadRecordsResult) {
+    option (google.api.http) = {
+      post: "/api/v1/fish/dead_records",
+      body: "*"
+    };
+  }
+  rpc FishDetail (FishDetailRequest) returns (FishDetailResult) {
+    option (google.api.http) = {
+      post: "/api/v1/fish/detail",
+      body: "*"
+    };
+  }
 }
 
 enum Parking {
@@ -94,6 +106,28 @@ message DivestitureGodheadResult {
   int64 price = 5;
 }
 
+message FishDetailRequest {
+  string fish_id = 1;
+}
+
+message FishDetailResult {
+  shared.v1.FreshFish fish = 1;
+}
+
+message FishDeadRecordsRequest {
+  string fish_id = 1;
+}
+
+message FishDeadRecordsResult {
+  message Record {
+    int64 record_at_ms = 1;
+    int32 event_type = 2;
+    string content = 3;
+    string jump_id = 4;
+  }
+  repeated Record list = 1;
+}
+
 message FishListRequest {}
 
 message FishPullRequest {}
@@ -115,27 +149,9 @@ message ParkingListResult {
 message FishCreateRequest {}
 
 message FishCreateResult {
-  optional string id = 1;
-  optional string name = 2;
-  optional int64 icon_source_id = 3;
-  optional int64 weight = 4;
-  optional int64 max_heal = 5;
-  optional int64 heal = 6;
-  optional int64 recover_speed = 7;
-  optional int64 atk = 8;
-  optional int64 def = 9;
-  optional int64 earn_speed = 10;
-  optional int32 dodge = 11;
-  optional int64 money = 12;
-  optional shared.v1.FishStatus status = 13;
-  optional int32 personality_id = 14;
-  optional string parking = 15;
-  string personality_name = 16;
-  optional int32 protect_count = 17;
-  optional int32 awaking_remain = 18;
-  optional int32 rating = 19;
-  optional int32 level = 20;
-  shared.v1.FishStatistics fish_statistics = 21;
+  shared.v1.FreshFish fish = 1;
+  string parking = 2;
+  optional int32 rating = 3;
 }
 
 message FishSleepRequest {
@@ -158,26 +174,7 @@ message FishPoolRankRequest {
 
 
 message FishPullResult {
-  message FishPull {
-    string id = 1;
-    int64 weight = 2;
-    int64 max_heal = 3;
-    int64 heal = 4;
-    int64 recover_speed = 5;
-    int64 atk = 6;
-    int64 def = 7;
-    int64 earn_speed = 8;
-    int32 dodge = 9;
-    optional int64 money = 10;
-    optional int32 protect_count = 11;
-    repeated shared.v1.FishSkill fish_skills = 12;
-    optional int32 awaking_remain = 13;
-    shared.v1.FishStatistics fish_statistics = 14;
-    int32 level = 15;
-    repeated shared.v1.FishEffect effects = 16;
-    repeated shared.v1.FishGodhead godhead = 17;
-  }
-  repeated FishPull list = 1;
+  repeated shared.v1.FishDetail list = 1;
   int64 ts_ms = 2;
 }
 

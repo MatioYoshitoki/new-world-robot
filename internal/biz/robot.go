@@ -164,9 +164,9 @@ func (r *Robot) tryRefreshFishList() error {
 	fs := make([]*v1.RobotMemory_Fishes_Fish, len(fishes.List))
 	for i, d := range fishes.List {
 		fs[i] = &v1.RobotMemory_Fishes_Fish{
-			FishId:         d.Id,
-			Statue:         *d.Status,
-			FishSkillCount: int32(len(d.FishSkills)),
+			FishId:         d.Fish.Id,
+			Statue:         d.Fish.Status,
+			FishSkillCount: int32(len(d.Fish.FishSkills)),
 		}
 	}
 	r.memory.Fishes.FishList = fs

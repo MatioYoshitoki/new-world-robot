@@ -21,7 +21,9 @@ const _ = http.SupportPackageIsVersion1
 
 const OperationFishAlive = "/new_world.v1.Fish/Alive"
 const OperationFishCreate = "/new_world.v1.Fish/Create"
+const OperationFishDeadRecords = "/new_world.v1.Fish/DeadRecords"
 const OperationFishDivestitureGodhead = "/new_world.v1.Fish/DivestitureGodhead"
+const OperationFishFishDetail = "/new_world.v1.Fish/FishDetail"
 const OperationFishList = "/new_world.v1.Fish/List"
 const OperationFishParkingList = "/new_world.v1.Fish/ParkingList"
 const OperationFishPoolRank = "/new_world.v1.Fish/PoolRank"
@@ -32,7 +34,9 @@ const OperationFishSleep = "/new_world.v1.Fish/Sleep"
 type FishHTTPServer interface {
 	Alive(context.Context, *FishAliveRequest) (*FishAliveResult, error)
 	Create(context.Context, *FishCreateRequest) (*FishCreateResult, error)
+	DeadRecords(context.Context, *FishDeadRecordsRequest) (*FishDeadRecordsResult, error)
 	DivestitureGodhead(context.Context, *DivestitureGodheadRequest) (*DivestitureGodheadResult, error)
+	FishDetail(context.Context, *FishDetailRequest) (*FishDetailResult, error)
 	List(context.Context, *FishListRequest) (*FishListResult, error)
 	ParkingList(context.Context, *ParkingListRequest) (*ParkingListResult, error)
 	PoolRank(context.Context, *FishPoolRankRequest) (*FishPoolRankResult, error)
@@ -52,6 +56,8 @@ func RegisterFishHTTPServer(s *http.Server, srv FishHTTPServer) {
 	r.POST("/api/v1/fish/alive", _Fish_Alive0_HTTP_Handler(srv))
 	r.POST("/api/v1/fish/pull", _Fish_Pull0_HTTP_Handler(srv))
 	r.POST("/api/v1/fish/parking/list", _Fish_ParkingList0_HTTP_Handler(srv))
+	r.POST("/api/v1/fish/dead_records", _Fish_DeadRecords0_HTTP_Handler(srv))
+	r.POST("/api/v1/fish/detail", _Fish_FishDetail0_HTTP_Handler(srv))
 }
 
 func _Fish_List0_HTTP_Handler(srv FishHTTPServer) func(ctx http.Context) error {
@@ -225,10 +231,50 @@ func _Fish_ParkingList0_HTTP_Handler(srv FishHTTPServer) func(ctx http.Context) 
 	}
 }
 
+func _Fish_DeadRecords0_HTTP_Handler(srv FishHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in FishDeadRecordsRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationFishDeadRecords)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.DeadRecords(ctx, req.(*FishDeadRecordsRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*FishDeadRecordsResult)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _Fish_FishDetail0_HTTP_Handler(srv FishHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in FishDetailRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationFishFishDetail)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.FishDetail(ctx, req.(*FishDetailRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*FishDetailResult)
+		return ctx.Result(200, reply)
+	}
+}
+
 type FishHTTPClient interface {
 	Alive(ctx context.Context, req *FishAliveRequest, opts ...http.CallOption) (rsp *FishAliveResult, err error)
 	Create(ctx context.Context, req *FishCreateRequest, opts ...http.CallOption) (rsp *FishCreateResult, err error)
+	DeadRecords(ctx context.Context, req *FishDeadRecordsRequest, opts ...http.CallOption) (rsp *FishDeadRecordsResult, err error)
 	DivestitureGodhead(ctx context.Context, req *DivestitureGodheadRequest, opts ...http.CallOption) (rsp *DivestitureGodheadResult, err error)
+	FishDetail(ctx context.Context, req *FishDetailRequest, opts ...http.CallOption) (rsp *FishDetailResult, err error)
 	List(ctx context.Context, req *FishListRequest, opts ...http.CallOption) (rsp *FishListResult, err error)
 	ParkingList(ctx context.Context, req *ParkingListRequest, opts ...http.CallOption) (rsp *ParkingListResult, err error)
 	PoolRank(ctx context.Context, req *FishPoolRankRequest, opts ...http.CallOption) (rsp *FishPoolRankResult, err error)
@@ -271,11 +317,37 @@ func (c *FishHTTPClientImpl) Create(ctx context.Context, in *FishCreateRequest, 
 	return &out, err
 }
 
+func (c *FishHTTPClientImpl) DeadRecords(ctx context.Context, in *FishDeadRecordsRequest, opts ...http.CallOption) (*FishDeadRecordsResult, error) {
+	var out FishDeadRecordsResult
+	pattern := "/api/v1/fish/dead_records"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationFishDeadRecords))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
 func (c *FishHTTPClientImpl) DivestitureGodhead(ctx context.Context, in *DivestitureGodheadRequest, opts ...http.CallOption) (*DivestitureGodheadResult, error) {
 	var out DivestitureGodheadResult
 	pattern := "/api/v1/fish/godhead/divestiture"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationFishDivestitureGodhead))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, err
+}
+
+func (c *FishHTTPClientImpl) FishDetail(ctx context.Context, in *FishDetailRequest, opts ...http.CallOption) (*FishDetailResult, error) {
+	var out FishDetailResult
+	pattern := "/api/v1/fish/detail"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationFishFishDetail))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {

@@ -2,6 +2,7 @@ package net_utils
 
 import (
 	"encoding/json"
+	"github.com/go-kratos/kratos/v2/errors"
 	"io"
 	"net/http"
 )
@@ -26,7 +27,8 @@ func RequestToStruct[T any](hc *http.Client, request *http.Request) (*CommonResu
 		return nil, err
 	}
 	if rst.Code == 503 {
-		panic(err)
+		//panic(err)
+		return nil, errors.New(-503, "网络错误", "")
 	}
 	return &rst, nil
 }

@@ -31,6 +31,8 @@ type FishClient interface {
 	Alive(ctx context.Context, in *FishAliveRequest, opts ...grpc.CallOption) (*FishAliveResult, error)
 	Pull(ctx context.Context, in *FishPullRequest, opts ...grpc.CallOption) (*FishPullResult, error)
 	ParkingList(ctx context.Context, in *ParkingListRequest, opts ...grpc.CallOption) (*ParkingListResult, error)
+	DeadRecords(ctx context.Context, in *FishDeadRecordsRequest, opts ...grpc.CallOption) (*FishDeadRecordsResult, error)
+	FishDetail(ctx context.Context, in *FishDetailRequest, opts ...grpc.CallOption) (*FishDetailResult, error)
 }
 
 type fishClient struct {
@@ -122,6 +124,24 @@ func (c *fishClient) ParkingList(ctx context.Context, in *ParkingListRequest, op
 	return out, nil
 }
 
+func (c *fishClient) DeadRecords(ctx context.Context, in *FishDeadRecordsRequest, opts ...grpc.CallOption) (*FishDeadRecordsResult, error) {
+	out := new(FishDeadRecordsResult)
+	err := c.cc.Invoke(ctx, "/new_world.v1.Fish/DeadRecords", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fishClient) FishDetail(ctx context.Context, in *FishDetailRequest, opts ...grpc.CallOption) (*FishDetailResult, error) {
+	out := new(FishDetailResult)
+	err := c.cc.Invoke(ctx, "/new_world.v1.Fish/FishDetail", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FishServer is the server API for Fish service.
 // All implementations must embed UnimplementedFishServer
 // for forward compatibility
@@ -135,6 +155,8 @@ type FishServer interface {
 	Alive(context.Context, *FishAliveRequest) (*FishAliveResult, error)
 	Pull(context.Context, *FishPullRequest) (*FishPullResult, error)
 	ParkingList(context.Context, *ParkingListRequest) (*ParkingListResult, error)
+	DeadRecords(context.Context, *FishDeadRecordsRequest) (*FishDeadRecordsResult, error)
+	FishDetail(context.Context, *FishDetailRequest) (*FishDetailResult, error)
 	mustEmbedUnimplementedFishServer()
 }
 
@@ -168,6 +190,12 @@ func (UnimplementedFishServer) Pull(context.Context, *FishPullRequest) (*FishPul
 }
 func (UnimplementedFishServer) ParkingList(context.Context, *ParkingListRequest) (*ParkingListResult, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ParkingList not implemented")
+}
+func (UnimplementedFishServer) DeadRecords(context.Context, *FishDeadRecordsRequest) (*FishDeadRecordsResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeadRecords not implemented")
+}
+func (UnimplementedFishServer) FishDetail(context.Context, *FishDetailRequest) (*FishDetailResult, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FishDetail not implemented")
 }
 func (UnimplementedFishServer) mustEmbedUnimplementedFishServer() {}
 
@@ -344,6 +372,42 @@ func _Fish_ParkingList_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Fish_DeadRecords_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FishDeadRecordsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FishServer).DeadRecords(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/new_world.v1.Fish/DeadRecords",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FishServer).DeadRecords(ctx, req.(*FishDeadRecordsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Fish_FishDetail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FishDetailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FishServer).FishDetail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/new_world.v1.Fish/FishDetail",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FishServer).FishDetail(ctx, req.(*FishDetailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Fish_ServiceDesc is the grpc.ServiceDesc for Fish service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -386,6 +450,14 @@ var Fish_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ParkingList",
 			Handler:    _Fish_ParkingList_Handler,
+		},
+		{
+			MethodName: "DeadRecords",
+			Handler:    _Fish_DeadRecords_Handler,
+		},
+		{
+			MethodName: "FishDetail",
+			Handler:    _Fish_FishDetail_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
