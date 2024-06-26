@@ -3,8 +3,662 @@
 
 openapi: 3.0.3
 info:
-    title: ""
+    title: Fish API
+    description: The auth service definition.
     version: 0.0.1
-paths: {}
+paths:
+    /api/v1/fish/alive:
+        post:
+            tags:
+                - Fish
+            operationId: Fish_Alive
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/FishAliveRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/FishAliveResult'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/fish/create:
+        post:
+            tags:
+                - Fish
+            operationId: Fish_Create
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/FishCreateRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/FishCreateResult'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/fish/dead_records:
+        post:
+            tags:
+                - Fish
+            operationId: Fish_DeadRecords
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/FishDeadRecordsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/FishDeadRecordsResult'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/fish/detail:
+        post:
+            tags:
+                - Fish
+            operationId: Fish_FishDetail
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/FishDetailRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/FishDetailResult'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/fish/godhead/divestiture:
+        post:
+            tags:
+                - Fish
+            operationId: Fish_DivestitureGodhead
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DivestitureGodheadRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DivestitureGodheadResult'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/fish/list:
+        post:
+            tags:
+                - Fish
+            operationId: Fish_List
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/FishListRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/FishListResult'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/fish/parking/list:
+        post:
+            tags:
+                - Fish
+            operationId: Fish_ParkingList
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ParkingListRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ParkingListResult'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/fish/pool/rank:
+        post:
+            tags:
+                - Fish
+            operationId: Fish_PoolRank
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/FishPoolRankRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/FishPoolRankResult'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/fish/pull:
+        post:
+            tags:
+                - Fish
+            operationId: Fish_Pull
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/FishPullRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/FishPullResult'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/fish/refining:
+        post:
+            tags:
+                - Fish
+            operationId: Fish_Refining
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/FishRefiningRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/FishRefiningResult'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/fish/sleep:
+        post:
+            tags:
+                - Fish
+            operationId: Fish_Sleep
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/FishSleepRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/FishSleepResult'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
 components:
-    schemas: {}
+    schemas:
+        DivestitureGodheadRequest:
+            type: object
+            properties:
+                fishId:
+                    type: string
+                godheadId:
+                    type: string
+        DivestitureGodheadResult:
+            type: object
+            properties:
+                propId:
+                    type: string
+                propType:
+                    type: integer
+                    format: int32
+                propName:
+                    type: string
+                propRemark:
+                    type: string
+                price:
+                    type: integer
+                    format: int64
+        FishAliveRequest:
+            type: object
+            properties:
+                fishId:
+                    type: string
+        FishAliveResult:
+            type: object
+            properties: {}
+        FishCreateRequest:
+            type: object
+            properties: {}
+        FishCreateResult:
+            type: object
+            properties:
+                fish:
+                    $ref: '#/components/schemas/FreshFish'
+                parking:
+                    type: string
+                rating:
+                    type: integer
+                    format: int32
+        FishDeadRecordsRequest:
+            type: object
+            properties:
+                fishId:
+                    type: string
+        FishDeadRecordsResult:
+            type: object
+            properties:
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/FishDeadRecordsResult_Record'
+        FishDeadRecordsResult_Record:
+            type: object
+            properties:
+                recordAtMs:
+                    type: integer
+                    format: int64
+                eventType:
+                    type: integer
+                    format: int32
+                content:
+                    type: string
+                jumpId:
+                    type: string
+        FishDetail:
+            type: object
+            properties:
+                fish:
+                    $ref: '#/components/schemas/FreshFish'
+                parking:
+                    type: string
+                rating:
+                    type: integer
+                    format: int32
+        FishDetailRequest:
+            type: object
+            properties:
+                fishId:
+                    type: string
+        FishDetailResult:
+            type: object
+            properties:
+                fish:
+                    $ref: '#/components/schemas/FreshFish'
+        FishEffect:
+            type: object
+            properties:
+                name:
+                    type: string
+                effectType:
+                    type: integer
+                    format: int32
+                effectExpireMs:
+                    type: integer
+                    format: int64
+        FishGodhead:
+            type: object
+            properties:
+                id:
+                    type: string
+                level:
+                    type: integer
+                    format: int32
+                fishName:
+                    type: string
+                masterName:
+                    type: string
+        FishListRequest:
+            type: object
+            properties: {}
+        FishListResult:
+            type: object
+            properties:
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/FishDetail'
+        FishPoolRankRequest:
+            type: object
+            properties:
+                page:
+                    type: integer
+                    format: int32
+                pageSize:
+                    type: integer
+                    format: int32
+                rankType:
+                    type: integer
+                    format: enum
+        FishPoolRankResult:
+            type: object
+            properties:
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/FishPoolRankResult_PoolRank'
+                myFishRankList:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/FishPoolRankResult_MyFishRank'
+                currentPage:
+                    type: integer
+                    format: int32
+                pageSize:
+                    type: integer
+                    format: int32
+                totalPage:
+                    type: integer
+                    format: int32
+        FishPoolRankResult_MyFishRank:
+            type: object
+            properties:
+                fishId:
+                    type: string
+                fishName:
+                    type: string
+                fishIconSourceId:
+                    type: integer
+                    format: int64
+                rank:
+                    type: integer
+                    format: int32
+        FishPoolRankResult_PoolRank:
+            type: object
+            properties:
+                fishId:
+                    type: string
+                weight:
+                    type: integer
+                    format: int64
+                masterUid:
+                    type: integer
+                    format: int64
+                masterName:
+                    type: string
+                aliveTimeMs:
+                    type: integer
+                    format: int64
+                rank:
+                    type: integer
+                    format: int32
+                fish:
+                    $ref: '#/components/schemas/FishDetail'
+        FishPullRequest:
+            type: object
+            properties: {}
+        FishPullResult:
+            type: object
+            properties:
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/FishDetail'
+                tsMs:
+                    type: integer
+                    format: int64
+        FishRefiningRequest:
+            type: object
+            properties:
+                fishId:
+                    type: string
+        FishRefiningResult:
+            type: object
+            properties:
+                fishName:
+                    type: string
+                fishIconSourceId:
+                    type: integer
+                    format: int64
+                propId:
+                    type: integer
+                    format: int64
+                propType:
+                    type: integer
+                    format: int32
+                propName:
+                    type: string
+                propRemark:
+                    type: string
+                experience:
+                    type: integer
+                    format: int32
+        FishSkill:
+            type: object
+            properties:
+                skillId:
+                    type: integer
+                    format: int32
+                level:
+                    type: integer
+                    format: int32
+        FishSleepRequest:
+            type: object
+            properties:
+                fishId:
+                    type: integer
+                    format: int64
+        FishSleepResult:
+            type: object
+            properties: {}
+        FishStatistics:
+            type: object
+            properties:
+                proactiveAttackCount:
+                    type: integer
+                    format: int32
+                counterAttackCount:
+                    type: integer
+                    format: int32
+                kills:
+                    type: integer
+                    format: int32
+                earnDetail:
+                    type: object
+                    additionalProperties:
+                        type: integer
+                        format: int64
+                growthDetail:
+                    type: object
+                    additionalProperties:
+                        type: integer
+                        format: int64
+                growthCountDetail:
+                    type: object
+                    additionalProperties:
+                        type: integer
+                        format: int32
+        FreshFish:
+            type: object
+            properties:
+                id:
+                    type: string
+                name:
+                    type: string
+                iconSourceId:
+                    type: integer
+                    format: int64
+                weight:
+                    type: integer
+                    format: int64
+                maxHeal:
+                    type: integer
+                    format: int64
+                heal:
+                    type: integer
+                    format: int64
+                recoverSpeed:
+                    type: integer
+                    format: int64
+                atk:
+                    type: integer
+                    format: int64
+                def:
+                    type: integer
+                    format: int64
+                earnSpeed:
+                    type: integer
+                    format: int64
+                dodge:
+                    type: integer
+                    format: int32
+                money:
+                    type: integer
+                    format: int64
+                status:
+                    type: integer
+                    format: enum
+                personalityId:
+                    type: integer
+                    format: int32
+                masterUid:
+                    type: integer
+                    format: int64
+                fishSkills:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/FishSkill'
+                protectCount:
+                    type: integer
+                    format: int32
+                awakingRemain:
+                    type: integer
+                    format: int32
+                fishStatistics:
+                    $ref: '#/components/schemas/FishStatistics'
+                level:
+                    type: integer
+                    format: int32
+                effects:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/FishEffect'
+                godhead:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/FishGodhead'
+                behavior:
+                    type: array
+                    items:
+                        type: integer
+                        format: int32
+        GoogleProtobufAny:
+            type: object
+            properties:
+                '@type':
+                    type: string
+                    description: The type of the serialized message.
+            additionalProperties: true
+            description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+        ParkingListRequest:
+            type: object
+            properties: {}
+        ParkingListResult:
+            type: object
+            properties:
+                parkingList:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ParkingListResult_ParkingDetail'
+        ParkingListResult_ParkingDetail:
+            type: object
+            properties:
+                parking:
+                    type: string
+                status:
+                    type: integer
+                    format: enum
+        Status:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+                    format: int32
+                message:
+                    type: string
+                    description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+                details:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufAny'
+                    description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+            description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+tags:
+    - name: Fish

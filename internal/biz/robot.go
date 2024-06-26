@@ -20,6 +20,7 @@ import (
 	"new-world-robot/pkg/convert"
 	"new-world-robot/pkg/net_utils"
 	"new-world-robot/pkg/utils"
+	"strconv"
 	"time"
 )
 
@@ -37,6 +38,7 @@ type Robot struct {
 	rd                                 *rand.Rand
 	memory                             *v1.RobotMemory
 	bs                                 *conf.Bootstrap
+	hasMarketed                        map[string]int
 	statisticsRequestCountMap          cmap.ConcurrentMap[string, int64]
 	statisticsRequestTotalCostMap      cmap.ConcurrentMap[string, int64]
 	defaultRateMap                     []func() error
@@ -53,6 +55,7 @@ func NewRobot(id int64, hc *http.Client, bs *conf.Bootstrap, rd *rand.Rand, face
 		hc:                            hc,
 		bs:                            bs,
 		rd:                            rd,
+		hasMarketed:                   make(map[string]int),
 		statisticsRequestCountMap:     cmap.New[int64](),
 		statisticsRequestTotalCostMap: cmap.New[int64](),
 		memory: &v1.RobotMemory{
@@ -229,19 +232,25 @@ func (r *Robot) tryRandomOperateFish() error {
 	fIdx := r.rd.Intn(fishSize)
 	fish := r.memory.Fishes.FishList[fIdx]
 	var err error
+	fishId, err := strconv.ParseInt(fish.FishId, 10, 64)
+	if err != nil {
+		return err
+	}
 	if fish.Statue == sharedpb.FishStatus_alive {
 		if fish.FishSkillCount > 5 {
 			_, err = r.fishSleep(fish.FishId)
 		}
 	} else if fish.Statue == sharedpb.FishStatus_sleep {
-		if fIdx%2 == 0 {
-			_, err = r.fishAlive(fish.FishId)
-		} else {
-			if fish.FishSkillCount > 5 {
-				_, err = r.marketSell(fish.FishId, 800+rand.Int63n(800))
+		if fishId%10 < 2 {
+			if _, ok := r.hasMarketed[fish.FishId]; ok {
+				_, err = r.fishRefining(fish.FishId)
+				delete(r.hasMarketed, fish.FishId)
 			} else {
-				_, err = r.fishAlive(fish.FishId)
+				_, err = r.marketSell(fish.FishId, 800+rand.Int63n(800))
+				r.hasMarketed[fish.FishId] = 1
 			}
+		} else {
+			_, err = r.fishAlive(fish.FishId)
 		}
 	} else if fish.Statue == sharedpb.FishStatus_dead {
 		_, err = r.fishRefining(fish.FishId)
@@ -427,7 +436,7 @@ func (r *Robot) fishSleep(fishId string) (*apipb.FishSleepResult, error) {
 	rst, err := net_utils.RequestToStruct[apipb.FishSleepResult](r.hc, request)
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) {
-			log.Errorf("sleep fish: %d, total cost: %d", fishId, time.Now().UnixMilli()-start)
+			log.Errorf("sleep fish: %s, total cost: %d", fishId, time.Now().UnixMilli()-start)
 		}
 		return nil, err
 	}
@@ -452,7 +461,7 @@ func (r *Robot) fishAlive(fishId string) (*apipb.FishAliveResult, error) {
 	rst, err := net_utils.RequestToStruct[apipb.FishAliveResult](r.hc, request)
 	if err != nil {
 		if errors.Is(err, context.DeadlineExceeded) {
-			log.Errorf("alive fish: %d, total cost: %d", fishId, time.Now().UnixMilli()-start)
+			log.Errorf("alive fish: %s, total cost: %d", fishId, time.Now().UnixMilli()-start)
 		}
 		return nil, err
 	}
@@ -584,7 +593,7 @@ func (r *Robot) marketMineList() (*apipb.MarketMineListResult, error) {
 	return &rst.Data, nil
 }
 
-func (r *Robot) marketDetail(productId int64) (*apipb.MarketDetailResult, error) {
+func (r *Robot) marketDetail(productId string) (*apipb.MarketDetailResult, error) {
 	start := time.Now().UnixMilli()
 	defer r.countDown(start, r.bs.App.MarketDetailUrl)
 	param := convert.StringToBytes(fmt.Sprintf(consts.OnlyProductIdParamTemplate, productId))

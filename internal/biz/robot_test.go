@@ -11,6 +11,13 @@ import (
 	"time"
 )
 
+func TestRobot_aa(t *testing.T) {
+	var s []int32
+	for _, i := range s {
+		t.Log(i)
+	}
+}
+
 func TestRobot_auth(t *testing.T) {
 	bs := tutils.LoadBs()
 	type fields struct {
