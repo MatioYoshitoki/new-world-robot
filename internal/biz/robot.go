@@ -20,7 +20,6 @@ import (
 	"new-world-robot/pkg/convert"
 	"new-world-robot/pkg/net_utils"
 	"new-world-robot/pkg/utils"
-	"strconv"
 	"time"
 )
 
@@ -166,10 +165,16 @@ func (r *Robot) tryRefreshFishList() error {
 	}
 	fs := make([]*v1.RobotMemory_Fishes_Fish, len(fishes.List))
 	for i, d := range fishes.List {
+		var totalSkillLevel int32 = 0
+		for _, skill := range d.Fish.FishSkills {
+			totalSkillLevel += skill.Level
+		}
 		fs[i] = &v1.RobotMemory_Fishes_Fish{
-			FishId:         d.Fish.Id,
-			Statue:         d.Fish.Status,
-			FishSkillCount: int32(len(d.Fish.FishSkills)),
+			FishId:              d.Fish.Id,
+			Statue:              d.Fish.Status,
+			FishSkillCount:      int32(len(d.Fish.FishSkills)),
+			Level:               d.Fish.Level,
+			FishTotalSkillLevel: totalSkillLevel,
 		}
 	}
 	r.memory.Fishes.FishList = fs
@@ -232,21 +237,20 @@ func (r *Robot) tryRandomOperateFish() error {
 	fIdx := r.rd.Intn(fishSize)
 	fish := r.memory.Fishes.FishList[fIdx]
 	var err error
-	fishId, err := strconv.ParseInt(fish.FishId, 10, 64)
-	if err != nil {
-		return err
-	}
+	//fishId, err := strconv.ParseInt(fish.FishId, 10, 64)
+	//if err != nil {
+	//	return err
+	//}
 	if fish.Statue == sharedpb.FishStatus_alive {
 		if fish.FishSkillCount > 5 {
 			_, err = r.fishSleep(fish.FishId)
 		}
 	} else if fish.Statue == sharedpb.FishStatus_sleep {
-		if fishId%10 < 2 {
+		if fish.Level < 80 && fish.Level > 30 && fish.FishTotalSkillLevel >= 20 {
 			if _, ok := r.hasMarketed[fish.FishId]; ok {
-				_, err = r.fishRefining(fish.FishId)
-				delete(r.hasMarketed, fish.FishId)
+				_, err = r.fishAlive(fish.FishId)
 			} else {
-				_, err = r.marketSell(fish.FishId, 800+rand.Int63n(800))
+				_, err = r.marketSell(fish.FishId, int64(fish.Level*100+fish.FishTotalSkillLevel*200)+rand.Int63n(800))
 				r.hasMarketed[fish.FishId] = 1
 			}
 		} else {
@@ -254,6 +258,7 @@ func (r *Robot) tryRandomOperateFish() error {
 		}
 	} else if fish.Statue == sharedpb.FishStatus_dead {
 		_, err = r.fishRefining(fish.FishId)
+		delete(r.hasMarketed, fish.FishId)
 	} else if fish.Statue == sharedpb.FishStatus_up_sell {
 		//_, err = r.marketStopSell(fish.FishId)
 	}
@@ -390,7 +395,7 @@ func (r *Robot) asset() (*apipb.AssetResult, error) {
 func (r *Robot) createFish() (*apipb.FishCreateResult, error) {
 	start := time.Now().UnixMilli()
 	defer r.countDown(start, r.bs.App.CreateFishUrl)
-	request, err := r.basePostRequest(r.bs.App.CreateFishUrl, bytes.NewBuffer(consts.EmptyRequestParam))
+	request, err := r.basePostRequest(r.bs.App.CreateFishUrl, bytes.NewBuffer(convert.StringToBytes(consts.CreateParamTemplate)))
 	if err != nil {
 		return nil, err
 	}

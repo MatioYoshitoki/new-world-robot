@@ -20,6 +20,8 @@ message RobotMemory {
     message Fish {
       string fish_id = 1;
       int32 fish_skill_count = 2;
+      int32 fish_total_skill_level = 3;
+      int32 level = 4;
       shared.v1.FishStatus statue = 13;
     }
     repeated Fish fish_list = 1;

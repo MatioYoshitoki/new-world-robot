@@ -29,4 +29,7 @@ const (
 	MarketSellParamTemplate = `
 		{"fish_id": "%s", "sell_duration": 0, "price": %d}
 	`
+	CreateParamTemplate = `
+		{"fish_nameplate_id": 50001}
+	`
 )
